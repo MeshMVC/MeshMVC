@@ -57,11 +57,28 @@ class _html_title extends \MeshMVC\Controller {
     }
 }
 
+/*
+
+Change to:
 
 class _html extends \MeshMVC\Controller {
     function validate() {
         return route("/test");
-        echo "test";
+    }
+    function execute() {
+        View("html.html")
+        ->email("email@email.com")
+        ->cache(false);
+    }
+}
+
+
+
+*/
+
+class _html extends \MeshMVC\Controller {
+    function validate() {
+        return route("/test");
     }
     function execute() {
         View()
