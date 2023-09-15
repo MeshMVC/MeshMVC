@@ -1,7 +1,7 @@
 <?php
 	namespace MeshMVC;
 	
-	require_once(PATH.'core/lib/querypath/vendor/autoload.php');
+	require_once(PATH.'core/lib/phpquery/phpQuery-onefile.php');
 	require_once(PATH."core/lib/topsort/vendor/autoload.php");
 
 	class Stats {
@@ -51,7 +51,7 @@
 		public static function parse($from='', $ret_type='render', $filter="", $to="", $display_type="html", $display_mode="replace_inner", $use_models=true,  $recursion_level=0) {
 
 			// var_dump($from, $ret_type, $filter, $to, $display_type, $display_mode, $use_models,  $recursion_level);
-			// prevent infinit recursions
+			// prevent infinite recursions
 			require PATH."core/queue/parser/recursion-safe.php";			
 			$recursion_level++;
 
@@ -90,46 +90,45 @@
 				// get source HTML
 				$place_me = $this_output;
 				if ( ($this_output != "") && ($filter != "") ) {
-					$place_me = qp($this_output, $filter)->get(0)->ownerDocument->saveXML();;
+					$place_me = \phpQuery::newDocumentHTML($this_output)[$filter];
 				} 
 
 				// set destination HTML
-				$destination = qp(self::$complete_output);
+				$destination = \phpQuery::newDocumentHTML(self::$complete_output);
 				if ($to == "") {
 					self::$complete_output = $place_me;
 				} else {		
 					// replace_inner, prepend, append, replace, replace_inner
-					$destination = qp(self::$complete_output, $to);
 					switch ($display_mode) {
 						case "prepend":
 							if ($display_type == "html") {
-								$destination->prepend($place_me);
+								$destination[$to]->prepend($place_me);
 							} else {
-								$destination->prepend(htmlentities($place_me));
+								$destination[$to]->prepend(htmlentities($place_me));
 							}
 							break;
 						case "append":
 							if ($display_type == "html") {
-								$destination->append($place_me);
+								$destination[$to]->append($place_me);
 							} else {
-								$destination->append(htmlentities($place_me));
+								$destination[$to]->append(htmlentities($place_me));
 							}
 							break;
 						case "replace":
 							if ($display_type == "html") {
-								$destination->replaceWith($place_me);
+								$destination[$to]->replaceWith($place_me);
 							} else {
-								$destination->replaceWith(htmlentities($place_me));
+								$destination[$to]->replaceWith(htmlentities($place_me));
 							}
 							break;
 						default: // replace_inner
 							if ($display_type == "html") {
-								$destination->html($place_me);
+								$destination[$to]->html($place_me);
 							} else {
-								$destination->text($place_me);
+								$destination[$to]->text($place_me);
 							}
 					}
-					self::$complete_output = $destination->get(0)->ownerDocument->saveXML();
+					self::$complete_output = $destination;
 				}
 			}
 		}
@@ -140,7 +139,8 @@
 			$paths_to_load = array();
 
 			// search for all files within the seeded directories
-			$headed = qp(self::$complete_output, "html head")->length;
+			$doc = \phpQuery::newDocumentHTML(self::$complete_output);
+			$headed = $doc["html head"]->length;
 			if ($headed) {
 				$initial_dirs = explode(",", SEEDS);
 				foreach ($initial_dirs as $dir) {
@@ -165,10 +165,10 @@
 								$append_header = '<script src="'.$resource.'"></script>';
 								break;
 						}
-						$doc = qp(self::$complete_output, "html head")->append($append_header);
-						self::$complete_output = $doc->parents(":root")->get(0)->ownerDocument->saveXML();
+						$doc["html head"]->append($append_header);
 					}
 				}
+				self::$complete_output = $doc;
 			}
 
 			// get current output
