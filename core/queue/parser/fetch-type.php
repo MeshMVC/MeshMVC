@@ -8,7 +8,7 @@
 		}
 
 		$paths_to_load = array();
-		$initial_dirs = explode(",", MAGIC_SEEDS);
+		$initial_dirs = explode(",", SEEDS);
 		foreach ($initial_dirs as $dir) {
 			$dir = explode(":", $dir);
 			$seed_type = $dir[0];

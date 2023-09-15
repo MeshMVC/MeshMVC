@@ -21,7 +21,7 @@
 			$paths_to_load = array();
 
 			// search for all files within the seeded directories
-			$initial_dirs = explode(",", MAGIC_SEEDS);
+			$initial_dirs = explode(",", SEEDS);
 			foreach ($initial_dirs as $dir) {
 				$dir = explode(":", $dir);
 				$seed_type = $dir[0];
@@ -142,7 +142,7 @@
 			// search for all files within the seeded directories
 			$headed = qp(self::$complete_output, "html head")->length;
 			if ($headed) {
-				$initial_dirs = explode(",", MAGIC_SEEDS);
+				$initial_dirs = explode(",", SEEDS);
 				foreach ($initial_dirs as $dir) {
 					$dir = explode(":", $dir);
 					$seed_type = $dir[0];

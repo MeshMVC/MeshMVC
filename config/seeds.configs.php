@@ -1,7 +1,7 @@
 <?php
 
 // defines where to search for files
-define('MAGIC_SEEDS', implode (',',
+define('SEEDS', implode (',',
     array(
         "controller:core/packages/*.php",
         "controller:webapp/packages/*.php",
