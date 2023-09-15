@@ -12,7 +12,7 @@ class Looper extends MeshMVC\Model {
     }
 }
 
-class _html_looper extends MeshMVC\Controller {
+class _html_looper extends \MeshMVC\Controller {
     function validate() {
         $this->needs("_html_title");
         return route("/test");
@@ -37,7 +37,7 @@ class Page extends MeshMVC\Model {
     public static $title = "Wizard.Build";
 }
 
-class _html_title extends MeshMVC\Controller {
+class _html_title extends \MeshMVC\Controller {
     function validate() {
         $this->needs("_html");
         return route("/test");
@@ -58,9 +58,10 @@ class _html_title extends MeshMVC\Controller {
 }
 
 
-class _html extends MeshMVC\Controller {
+class _html extends \MeshMVC\Controller {
     function validate() {
         return route("/test");
+        echo "test";
     }
     function execute() {
         View()

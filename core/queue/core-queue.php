@@ -70,6 +70,7 @@
 				if ($use_models && count($model) > 0) {
 
 					// THE DANGEROUS MIGHTY FUNCTION OF ALL HEAVENS & HELL
+
 					ob_start();
 					echo eval("?>$this_output<?");
 					$this_output = ob_get_contents();

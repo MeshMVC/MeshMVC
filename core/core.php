@@ -11,11 +11,11 @@
 
 	// Includes
 	require_once PATH."core/tools/core-tools.php";
-	
+
 	// Configs
 	require_once PATH."core/setup/core-load-configs.php";
-	$setup = new MeshMVC\Config();
-	
+	$setup = new \MeshMVC\Config();
+
 	// routes (f=*, !q=*)
 	require_once PATH."core/route/route.php";
 	
