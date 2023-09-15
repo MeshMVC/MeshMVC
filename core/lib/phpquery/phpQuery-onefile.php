@@ -3,7 +3,8 @@
  * phpQuery is a server-side, chainable, CSS3 selector driven
  * Document Object Model (DOM) API based on jQuery JavaScript Library.
  *
- * @version 0.9.5
+ * @version 0.9.5.1
+ * @link https://github.com/MeshMVC/MeshMVC/blob/main/core/lib/phpquery/phpQuery-onefile.php // patch by Luc Laverdure to fix deprecated warnings.
  * @link http://code.google.com/p/phpquery/
  * @link http://phpquery-library.blogspot.com/
  * @link http://jquery.com/
@@ -284,7 +285,7 @@ class DOMDocumentWrapper {
 		}
 		// Should be careful here, still need 'magic encoding detection' since lots of pages have other 'default encoding'
 		// Worse, some pages can have mixed encodings... we'll try not to worry about that
-		$requestedCharset = strtoupper($requestedCharset);
+		$requestedCharset = strtoupper($requestedCharset ?? '');
 		$documentCharset = strtoupper($documentCharset);
 		phpQuery::debug("DOC: $documentCharset REQ: $requestedCharset");
 		if ($requestedCharset && $documentCharset && $requestedCharset !== $documentCharset) {
@@ -2782,6 +2783,7 @@ class phpQueryObject
 	public function length() {
 		return $this->size();
 	}
+	#[\ReturnTypeWillChange]
 	public function count() {
 		return $this->size();
 	}
@@ -4065,6 +4067,7 @@ class phpQueryObject
 	/**
    * @access private
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind(){
 		$this->debug('iterating foreach');
 //		phpQuery::selectDocument($this->getDocumentID());
@@ -4078,14 +4081,16 @@ class phpQueryObject
 		$this->current = 0;
 	}
 	/**
-   * @access private
-	 */
+    * @access private
+	*/
+	#[\ReturnTypeWillChange]
 	public function current(){
 		return $this->elementsInterator[ $this->current ];
 	}
 	/**
    * @access private
 	 */
+	#[\ReturnTypeWillChange]
 	public function key(){
 		return $this->current;
 	}
@@ -4100,6 +4105,7 @@ class phpQueryObject
 	 * @see phpQueryObject::_next()
 	 * @return phpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
 	 */
+	#[\ReturnTypeWillChange]
 	public function next($cssSelector = null){
 //		if ($cssSelector || $this->valid)
 //			return $this->_next($cssSelector);
@@ -4117,6 +4123,7 @@ class phpQueryObject
 	/**
    * @access private
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid(){
 		return $this->valid;
 	}
@@ -4125,18 +4132,21 @@ class phpQueryObject
 	/**
    * @access private
 	 */
+	 #[\ReturnTypeWillChange]
 	public function offsetExists($offset) {
 		return $this->find($offset)->size() > 0;
 	}
 	/**
    * @access private
 	 */
+	 #[\ReturnTypeWillChange]
 	public function offsetGet($offset) {
 		return $this->find($offset);
 	}
 	/**
    * @access private
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $value) {
 //		$this->find($offset)->replaceWith($value);
 		$this->find($offset)->html($value);
@@ -4144,6 +4154,7 @@ class phpQueryObject
 	/**
    * @access private
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset) {
 		// empty
 		throw new Exception("Can't do unset, use array interface only for calling queries and replacing HTML.");
