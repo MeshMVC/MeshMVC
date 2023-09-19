@@ -7,8 +7,8 @@
 		// define if debugging or not
 		public const DEBUG = true;
 		
-		// define theme
-		public const CRON_JOB_TOKEN = '';
-		
+		// define environment
+		public const ENV = "dev";
+
 	}
 ?>

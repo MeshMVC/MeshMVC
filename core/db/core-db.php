@@ -10,7 +10,12 @@
 		public function __construct() {
 			if (defined("DB_HOST") && defined("DB_USER") && defined("DB_PASS") && defined("DB_NAME")) {
 				$con = self::connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-				return $con;
+                $args = func_get_args();
+				if (count($args) > 0) {
+				    return self::query()
+				} else {
+				    return $con;
+				}
 			}
 			return false;
 		}
@@ -42,12 +47,16 @@
 			return self::$isConnected;
 		}
 
-		// query(SQL: ? for parameters, "idsb" (int, double, string, blob), arg1, arg2);
 		static function query() {
+            $args = func_get_args();
+            return self::queryWithArgs($args);
+        }
+
+		// query(SQL: ? for parameters, "idsb" (int, double, string, blob), arg1, arg2);
+		static function queryWithArgs($args) {
 			try {
 				// init vars
 				$values = array();
-				$args = func_get_args();
 				$query = array_shift($args);
 				$stmt =  self::$dblink->stmt_init();
 

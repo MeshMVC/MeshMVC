@@ -24,40 +24,41 @@
 	}
 
 	// View obj
-	function View() {
+	function view() {
 		return new \MeshMVC\View();
 	}
 
 	// Model obj
-	//_construct($var, $val, $id=null, $parent_id=null, $namespace="general")
-	function Model($key="var", $val="", $space="general", $type="s") {
-		return new \MeshMVC\Model($key, $val, $space, $type);
+	function model($name, $value) {
+		return new \MeshMVC\Models($key, $value);
 	}
 
 	// Model Group obj
-	function Models() {
+	function models() {
 		return new \MeshMVC\Models();
 	}
-	function Group() {
+	function group() {
 		return new \MeshMVC\Models();
 	}
-	function Table() {
+	function table() {
 		return new \MeshMVC\Models();
 	}
-	function Matrix() {
+	function matrix() {
 		return new \MeshMVC\Models();
 	}
 
 	// Database wrapper
-	function DB() {
-		return new MeshMVC\Database();
+	function db($query) {
+		return new MeshMVC\Database($query);
 	}
 
-	function Posted($arg) {
+	function posted($arg) {
 		return \MeshMVC\Tools::Posted($arg);
 	}
-	function Got($arg) {
+	function got($arg) {
 		return \MeshMVC\Tools::Got($arg);
 	}
-	
+	function redirect($url) {
+		return \MeshMVC\Tools::redirect($url);
+	}
 ?>

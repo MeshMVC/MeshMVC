@@ -53,7 +53,8 @@ class _html_title extends \MeshMVC\Controller {
         View()
         ->from("title.html")
         ->to("body")
-        ->render("append", null); // null is to prevent caching
+        ->render("append", null); // null is to prevent caching // do ->cache(false) instead
+        // add ->email($address)
     }
 }
 
@@ -66,13 +67,9 @@ class _html extends \MeshMVC\Controller {
         return route("/test");
     }
     function execute() {
-        View("html.html")
-        ->email("email@email.com")
-        ->cache(false);
+        View("test.html");
     }
 }
-
-
 
 */
 

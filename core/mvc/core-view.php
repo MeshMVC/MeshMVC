@@ -7,15 +7,35 @@
 		private $from = ''; 	// from template
 		private $filter = '';
 		private $to = ''; 	// to selector
+		private $cache = false; // caching
 
 		private $display_type = "html"; // html, text or json
-		private $display_mode = "replace_inner"; // or prepend, append, replace, replace_inner
+		private $display_mode = "append"; // or prepend, append, replace, replace_inner
 
 		private $use_models = true; // default: true (render models within brackets ex: "[user.email]") 
 		private $rendered = false;
 		private static $counted = 0;
-		
-		// output template
+
+        // constructor requires filename of view
+        public function __construct($from) {
+			$this->from = $from;
+			return $this;
+        }
+
+        // automatically render view on destruction
+        public function __destruct() {
+            return $this->render($this->display_mode, null, $this->display_type);
+        }
+
+        public function toString() {
+			if (!$this->rendered) {
+				//TODO: if cached with cache_key: output cache data
+				return Queue::parse($this->from, 'render', $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
+				$this->rendered = true;
+ 			}
+        }
+
+		// manual view render
 		public function render($display_mode=null, $cache_key=null, $display_type=null) {
 			if ($display_mode != null) $this->display_mode = $display_mode;
 			if ($display_type != null) $this->display_type = $display_type;
@@ -25,6 +45,16 @@
 				$this->rendered = true;
  			}
 			return true;
+		}
+
+		// set caching
+		public function cache($setCaching) {
+            $this->cache = $setCaching;
+		}
+
+		// send view as email
+		public function email($filename) {
+            // send email
 		}
 
 		// write to file
@@ -68,5 +98,6 @@
 			$this->use_models = $use_models;
 			return $this;
 		}
+
 
 	}

@@ -17,7 +17,7 @@ namespace MeshMVC; // see "Defining Namespaces" section
 
 		// q(number) = query argument (starts with 0)
 		// q(string) = test if current url matches string 
-		public static function queryURL($arg_number='all') {
+		public static function queryURL($arg_number='all', $controller=null, $dependencies=[]) {
 			if ($arg_number=='all') {
 				return (isset($_GET['q'])) ? $_GET['q'] : '/';
 			} elseif (is_numeric($arg_number)) {
@@ -26,6 +26,11 @@ namespace MeshMVC; // see "Defining Namespaces" section
 					return $array[$arg_number.''];
 				}
 			} elseif (!is_numeric($arg_number)) {
+
+                if ($controller != null) {
+                    \MeshMVC\Router::$controllers_list[]  = [$controller, $dependencies]
+                }
+
 				return self::inpath($arg_number);
 			}
 			return '';

@@ -7,7 +7,12 @@
 
         public static $models = Array();
 
-		public function __construct() {
+		public function __construct($name, $value = null) {
+		    if ($value == null) {
+		        return self::$models[$name];
+		    } else {
+                self::$models[$name] = $value;
+		    }
             return $this;
 		}
 

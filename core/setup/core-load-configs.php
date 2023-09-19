@@ -7,6 +7,11 @@
 		include $config_file;
 	}
 
+    $env_config_file = PATH."config/".\MeshMVC\Config::ENV.".env.php";
+    if (file_exists($env_config_file) {
+		include $env_config_file;
+    }
+
 	if (MeshMVC\Config::DEBUG) {
 		error_reporting(E_ALL);
 		ini_set('display_errors', 1);
