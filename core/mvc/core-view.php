@@ -26,7 +26,7 @@
 
         // automatically render view on destruction
         public function __toString() {
-            @$this->render($this->display_mode, null, $this->display_type);
+            $this->render($this->display_mode, null, $this->display_type);
             return true;
         }
 

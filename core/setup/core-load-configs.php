@@ -13,9 +13,14 @@
 
     // only display error when in debug mode
 	if (\MeshMVC\Config::DEBUG) {
+	    // when debugging pretty print all errors
+        ini_set("html_errors", "1");
+        ini_set("error_prepend_string", "<pre style='color: #333; font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; font-size:14px;'>");
+        ini_set("error_append_string ", "</pre>");
 		error_reporting(E_ALL);
 		ini_set('display_errors', 1);
 	} else {
+	    // when not debugging, suppress all errors & warnings
 		error_reporting(0);
 		ini_set('display_errors', 0);
 	}

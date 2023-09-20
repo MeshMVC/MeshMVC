@@ -21,7 +21,7 @@
 			$paths_to_load = array();
 
 			// search for all files within the seeded directories
-			foreach (\MeshMVC\Config::SEEDS as $dir) {
+			foreach (\MeshMVC\Config::$SEEDS as $dir) {
 				$dir = explode(":", $dir);
 				$seed_type = $dir[0];
 				$seeded_path = $dir[1];
@@ -49,7 +49,7 @@
 
 		public static function parse($from='', $ret_type='render', $filter="", $to="", $display_type="html", $display_mode="replace_inner", $use_models=true,  $recursion_level=0) {
 
-			// var_dump($from, $ret_type, $filter, $to, $display_type, $display_mode, $use_models,  $recursion_level);
+			var_dump($from, $ret_type, $filter, $to, $display_type, $display_mode, $use_models,  $recursion_level);
 			// prevent infinite recursions
 			require PATH."core/queue/parser/recursion-safe.php";			
 			$recursion_level++;
@@ -58,9 +58,6 @@
 			$this_output = "";
 			$stack = array();
 
-			// start output buffer
-			//if (!Config::DEBUG) ob_start();
-		
 			// get view as filename, url or data
 			require PATH."core/queue/parser/fetch-type.php";
 
@@ -69,7 +66,6 @@
 				if ($use_models && count($model) > 0) {
 
 					// THE DANGEROUS MIGHTY FUNCTION OF ALL HEAVENS & HELL
-
 					ob_start();
 					echo eval("?>$this_output<?");
 					$this_output = ob_get_contents();
@@ -135,7 +131,7 @@
 								$destination[$to]->append(htmlentities($place_me));
 							}
 					}
-					self::$complete_output = $destination;
+					self::$complete_output = $destination."";
 				}
 			}
 		}
@@ -149,7 +145,7 @@
 			$doc = \phpQuery::newDocumentHTML(self::$complete_output);
 			$headed = $doc["html head"]->length;
 			if ($headed) {
-				foreach (\MeshMVC\Config::SEEDS as $dir) {
+				foreach (\MeshMVC\Config::$SEEDS as $dir) {
 					$dir = explode(":", $dir);
 					$seed_type = $dir[0];
 					$seeded_path = $dir[1];
@@ -237,6 +233,7 @@
 			// prevent infinite loops & dependencies to controllers that don't exist
 			$invalid_controllers = Array();
 			foreach ($priority_controllers as $this_controller_name => $priority_c) {
+			    // dig_dependencies($dep, $trail, &$objs,  &$invalid_controllers)
 				$digger = \MeshMVC\Tools::dig_dependencies($this_controller_name, Array(), $this->obj_controllers, $invalid_controllers);
 			}
 

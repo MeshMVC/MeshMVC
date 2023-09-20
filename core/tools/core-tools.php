@@ -43,7 +43,8 @@ namespace MeshMVC;
 			return fnmatch($url, "/" . $q);
 		}
 
-		// controller dependency manager, returns empty array when no children are found 
+		// controller dependency manager, returns empty array when no children are found
+		// $this_controller_name, Array(), $this->obj_controllers, $invalid_controllers
 		public static function dig_dependencies($dep, $trail, &$objs,  &$invalid_controllers) {
 
 			// add trail
@@ -53,7 +54,8 @@ namespace MeshMVC;
 			$freqs = array_count_values($trail);
 			$freq_dep = $freqs[$dep];
 
-			if ($freq_dep >= 2) {				
+            // when 2 items are the same in the trail, this would cause an infinite loop
+			if ($freq_dep >= 2) {
 				foreach($trail as $invalid_controller) {
 					$invalid_controllers[$invalid_controller] = "Caught controller: ".$invalid_controller." in a loop (circular controller dependencies). Trail cancelled: ".implode(", ", $trail);
 				}
@@ -68,9 +70,8 @@ namespace MeshMVC;
 				return Array();
 			}
 
-			$controller = $objs[$dep];
-			$dep_children = $controller->needed_controllers;
-
+            // // check each child dependency as trail for infinite loops and invalid nodes (controllers with dependency missing)
+			$dep_children = $objs[$dep]->needed_controllers;
 			if (count($dep_children) > 0) {
 				foreach ($dep_children as $dependency) {
 					$ret_dump = self::dig_dependencies($dependency, $trail, $objs, $invalid_controllers);

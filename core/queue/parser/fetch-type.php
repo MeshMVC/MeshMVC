@@ -8,7 +8,7 @@
 		}
 
 		$paths_to_load = array();
-		foreach (\MeshMVC\Config::SEEDS as $dir) {
+		foreach (\MeshMVC\Config::$SEEDS as $dir) {
 			$dir = explode(":", $dir);
 			$seed_type = $dir[0];
 			$seeded_path = $dir[1];

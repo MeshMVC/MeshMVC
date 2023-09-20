@@ -37,23 +37,22 @@
 
 		public function needs($controller_list) {
 			if (is_array($controller_list)) {
+				    // when argument is an array, add to controllers list
 				foreach ($controller_list as $con) {
 					$this->needed_controllers[] = trim($con);
-					return true;
 				}
 			} else {
 				if (strpos($controller_list, ",") !== false) {
+				    // when string is comma separated, treat it as an array
 					$controllers_req = explode(",", $controller_list);
 					foreach ($controllers_req as $con) {
 						$this->needed_controllers[] = trim($con);
 					}
-					return true;
 				} else {
 					$this->needed_controllers[] = trim($controller_list);
-					return true;
 				}
 			}
-			return false;
+			return true;
 		}
 
 		// MVC shortcuts

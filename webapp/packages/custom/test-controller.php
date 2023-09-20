@@ -6,7 +6,6 @@
 // Homepage controller:
 class _home extends \MeshMVC\Controller {
     function validate() {
-echo "<3>";
         return route("/home") && needs("_page_components"); // _html controller class dependency
     }
     function execute() {
@@ -17,7 +16,6 @@ echo "<3>";
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
     function validate() {
-echo "<1>";
         return route("/*");
     }
     function execute() {
@@ -29,15 +27,13 @@ echo "<1>";
 // (multiple controllers can fire for the same page/route/api)
 class _page_components extends \MeshMVC\Controller {
     function validate() {
-echo "<2>";
         return route("/*") && needs("_html");
     }
     function execute() {
         // multiple views can trigger per controller
-        view("title.html")
-        ->to("html body header"); // appends to body header element
 
         view("title.html")
         ->to("html body header"); // appends to body header element
+
     }
 }
