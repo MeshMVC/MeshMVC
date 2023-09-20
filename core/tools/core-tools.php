@@ -1,6 +1,6 @@
 <?php
 
-namespace MeshMVC; // see "Defining Namespaces" section
+namespace MeshMVC;
 
 	class Tools {
 
@@ -28,7 +28,7 @@ namespace MeshMVC; // see "Defining Namespaces" section
 			} elseif (!is_numeric($arg_number)) {
 
                 if ($controller != null) {
-                    \MeshMVC\Router::$controllers_list[]  = [$controller, $dependencies]
+                    \MeshMVC\Router::$controllers_list[]  = [$controller, $dependencies];
                 }
 
 				return self::inpath($arg_number);
@@ -197,7 +197,7 @@ namespace MeshMVC; // see "Defining Namespaces" section
 
 
 		public static function search_files($pattern, $flags = 0) {
-			$files = glob($pattern, $flags); 
+			$files = glob($pattern, $flags);
 			foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
 				$files = array_merge(
 					[],

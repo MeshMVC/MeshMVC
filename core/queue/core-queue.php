@@ -11,7 +11,7 @@
 	class Queue {
 		private static $complete_output = "";
 
-		private $obj_controllers; // Controllers Found
+		private $obj_controllers = []; // Controllers Found
 		private static $resources = Array(); // All stacked data
 		
 		public function __construct() {
@@ -21,8 +21,7 @@
 			$paths_to_load = array();
 
 			// search for all files within the seeded directories
-			$initial_dirs = explode(",", SEEDS);
-			foreach ($initial_dirs as $dir) {
+			foreach (\MeshMVC\Config::SEEDS as $dir) {
 				$dir = explode(":", $dir);
 				$seed_type = $dir[0];
 				$seeded_path = $dir[1];
@@ -122,11 +121,18 @@
 								$destination[$to]->replaceWith(htmlentities($place_me));
 							}
 							break;
-						default: // replace_inner
+						case "replace_inner": //
 							if ($display_type == "html") {
 								$destination[$to]->html($place_me);
 							} else {
 								$destination[$to]->text($place_me);
+							}
+							break;
+						default:
+							if ($display_type == "html") {
+								$destination[$to]->append($place_me);
+							} else {
+								$destination[$to]->append(htmlentities($place_me));
 							}
 					}
 					self::$complete_output = $destination;
@@ -143,8 +149,7 @@
 			$doc = \phpQuery::newDocumentHTML(self::$complete_output);
 			$headed = $doc["html head"]->length;
 			if ($headed) {
-				$initial_dirs = explode(",", SEEDS);
-				foreach ($initial_dirs as $dir) {
+				foreach (\MeshMVC\Config::SEEDS as $dir) {
 					$dir = explode(":", $dir);
 					$seed_type = $dir[0];
 					$seeded_path = $dir[1];

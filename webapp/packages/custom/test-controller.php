@@ -1,86 +1,43 @@
 <?php
 
-class Looper extends MeshMVC\Model {
-    public static $items = Array();
+/* PHP Files can contain multiple controllers. */
 
-    public static function add($row, $rnd) {
-        $items[] = ["row" => $row, "random" => $rnd];
-    }
 
-    public function getItems() {
-        return self::$items;
-    }
-}
-
-class _html_looper extends \MeshMVC\Controller {
+// Homepage controller:
+class _home extends \MeshMVC\Controller {
     function validate() {
-        $this->needs("_html_title");
-        return route("/test");
+echo "<3>";
+        return route("/home") && needs("_page_components"); // _html controller class dependency
     }
     function execute() {
-        $looper = new Looper();
-        for ($i=0; $i <= 10; ++$i) {
-            $looper::add($i, mt_rand(1,999));
-        }
-
-        Models()
-        ->add("looper", $looper);
-
-        View()
-        ->from("looper.html")
-        ->to("body")
-        ->render("append", null); // runs once then caches result
+        view("home.html")
+        ->to("html body"); // appends page contents to document body
     }
 }
-
-class Page extends MeshMVC\Model {
-    public static $title = "Wizard.Build";
-}
-
-class _html_title extends \MeshMVC\Controller {
-    function validate() {
-        $this->needs("_html");
-        return route("/test");
-    }
-    function execute() {
-        // var_name, value, namespace
-        $page = New Page();
-        $page::$title = "Hello World";
-
-        Models()
-        ->add("page", $page);
-
-        View()
-        ->from("title.html")
-        ->to("body")
-        ->render("append", null); // null is to prevent caching // do ->cache(false) instead
-        // add ->email($address)
-    }
-}
-
-/*
-
-Change to:
-
+// HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
     function validate() {
-        return route("/test");
+echo "<1>";
+        return route("/*");
     }
     function execute() {
-        View("test.html");
+        view("html.html");
     }
 }
 
-*/
-
-class _html extends \MeshMVC\Controller {
+// Page components controller to ensure controllers fire in order
+// (multiple controllers can fire for the same page/route/api)
+class _page_components extends \MeshMVC\Controller {
     function validate() {
-        return route("/test");
+echo "<2>";
+        return route("/*") && needs("_html");
     }
     function execute() {
-        View()
-        ->from("html.html")
-        ->render();
+        // multiple views can trigger per controller
+        view("title.html")
+        ->to("html body header"); // appends to body header element
+
+        view("title.html")
+        ->to("html body header"); // appends to body header element
     }
 }
-

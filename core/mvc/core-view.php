@@ -18,13 +18,16 @@
 
         // constructor requires filename of view
         public function __construct($from) {
+            global $current_this;
+            $current_this = $this;
 			$this->from = $from;
 			return $this;
         }
 
         // automatically render view on destruction
-        public function __destruct() {
-            return $this->render($this->display_mode, null, $this->display_type);
+        public function __toString() {
+            @$this->render($this->display_mode, null, $this->display_type);
+            return true;
         }
 
         public function toString() {

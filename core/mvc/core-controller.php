@@ -4,10 +4,16 @@
 
 	// Core Controller class for all controller objects to extend
 	class Controller {
+
 		// unit tests results
 		private $unit_tests = array();
 		public $needed_controllers = array();
-		
+
+        public function __construct() {
+            global $current_this;
+            $current_this = $this;
+        }
+
 		// Unit Testing
 		public function passed($log) {
 			// log success test

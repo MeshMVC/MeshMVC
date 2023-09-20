@@ -12,7 +12,7 @@
 				$con = self::connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
                 $args = func_get_args();
 				if (count($args) > 0) {
-				    return self::query()
+				    return self::query();
 				} else {
 				    return $con;
 				}

@@ -24,8 +24,16 @@
 	}
 
 	// View obj
-	function view() {
-		return new \MeshMVC\View();
+	function view($filename) {
+        global $current_this;
+		@new \MeshMVC\View($filename).""; // trigger view __toString()
+		return $current_this;
+	}
+
+	//
+	function needs($controllers) {
+        global $current_this;
+		return $current_this->needs($controllers);
 	}
 
 	// Model obj

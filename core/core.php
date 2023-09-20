@@ -1,5 +1,9 @@
 <?php
 
+    // display core errors!
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+
 	// init session
 	session_start();
 
@@ -14,7 +18,6 @@
 
 	// Configs
 	require_once PATH."core/setup/core-load-configs.php";
-	$setup = new \MeshMVC\Config();
 
 	// routes (f=*, !q=*)
 	require_once PATH."core/route/route.php";
