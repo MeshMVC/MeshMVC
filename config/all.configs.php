@@ -10,11 +10,11 @@
 		// define environment
 		public const ENV = "dev";
 
-        public const SEEDS = array(
-            "controller:webapp/packages/*.php",
-            "css:webapp/packages/*.css",
-            "js:webapp/packages/*.js",
-            "media:webapp/packages/*.*"
+        public static $SEEDS = array(
+            "controller:webapp/*.php",
+            "css:webapp/*.css",
+            "js:webapp/*.js",
+            "media:webapp/*.*"
         );
 
 	}

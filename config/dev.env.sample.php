@@ -10,6 +10,9 @@
 	    public const DB_PASS = "";
 
 	    public const AWS_S3_KEY = "";
+
+        // Add seeds if needed
+	    // \MeshMVC\Config::$SEEDS[] = "controller:webapp/*.php";
 	}
 
 ?>
