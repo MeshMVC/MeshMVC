@@ -25,14 +25,13 @@
 
 	// View obj
 	function view($filename) {
-        global $current_this;
 		new \MeshMVC\View($filename).""; // trigger view __toString()
-		return $current_this;
+		return \MeshMVC\Cross:$currentView;
 	}
 
 	//
 	function needs($controllers) {
-        global $current_this;
+	    $current_this = \MeshMVC\Cross:$currentController;
 		@$current_this->needs($controllers);
 		return $current_this;
 	}

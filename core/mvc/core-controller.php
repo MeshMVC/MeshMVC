@@ -10,8 +10,7 @@
 		public $needed_controllers = array();
 
         public function __construct() {
-            global $current_this;
-            $current_this = $this;
+            \MeshMVC\Cross:$currentController = $this;
         }
 
 		// Unit Testing

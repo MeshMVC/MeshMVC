@@ -24,6 +24,7 @@
 	
 	// MVC
 	require_once PATH."core/db/core-db.php";
+	require_once PATH."core/mvc/core-cross.php";
 	require_once PATH."core/mvc/core-model.php";
 	require_once PATH."core/mvc/core-models.php";
 	require_once PATH."core/mvc/core-view.php";

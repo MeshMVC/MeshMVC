@@ -18,8 +18,7 @@
 
         // constructor requires filename of view
         public function __construct($from) {
-            global $current_this;
-            $current_this = $this;
+            \MeshMVC\Cross:$currentView = $this;
 			$this->from = $from;
 			return $this;
         }

@@ -49,7 +49,7 @@
 
 		public static function parse($from='', $ret_type='render', $filter="", $to="", $display_type="html", $display_mode="replace_inner", $use_models=true,  $recursion_level=0) {
 
-			var_dump($from, $ret_type, $filter, $to, $display_type, $display_mode, $use_models,  $recursion_level);
+			// var_dump($from, $ret_type, $filter, $to, $display_type, $display_mode, $use_models,  $recursion_level);
 			// prevent infinite recursions
 			require PATH."core/queue/parser/recursion-safe.php";			
 			$recursion_level++;
