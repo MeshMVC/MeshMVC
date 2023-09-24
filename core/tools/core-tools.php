@@ -20,7 +20,7 @@ namespace MeshMVC;
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_PROXY, $proxy);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_USERAGENT, \MeshMVC\Environment::PROXY_AGENT);
+            curl_setopt($ch, CURLOPT_USERAGENT, \MeshMVC\Environment::DEFAULT_PROXY_AGENT);
             curl_setopt($ch, CURLOPT_AUTOREFERER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
@@ -32,13 +32,13 @@ namespace MeshMVC;
 
             // get proxy errors
             if (curl_getinfo($ch, CURLINFO_PROXY_ERROR) != CURLPX_OK) {
-                throw new Exception("Proxy(".CURLOPT_PROXY.") error downloading: ".$url);
+                throw new \Exception("Proxy(".CURLOPT_PROXY.") error downloading: ".$url);
             }
 
             // get response code to ensure
             if (\MeshMVC\Environment::DEFAULT_PROXY_VALIDATE_RESPONSE_CODES) {
                 $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-                if ($code != 200) throw new Exception($code." error downloading: ".$url);
+                if ($code != 200) throw new \Exception($code." error downloading: ".$url);
             }
 
             curl_close($ch);

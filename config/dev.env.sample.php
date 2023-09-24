@@ -4,7 +4,7 @@
 
 	class Environment extends \MeshMVC\Config {
 
-		public const SITE_NAME = "MeshMVC(".self::ENV.")";
+		public const SITE_NAME = "MeshMVC (".self::ENV.")";
 
 		// REQUIRED: define if debugging or not
 		public const DEBUG = true;

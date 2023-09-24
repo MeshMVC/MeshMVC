@@ -26,7 +26,6 @@
         // automatically render view on destruction
         public function __destruct() {
             if ($this->doRenderOnDestruct) $this->render();
-            \MeshMVC\Cross::$currentView = null;
         }
 
         private function parseOutput($currentOutput) {

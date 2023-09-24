@@ -17,7 +17,6 @@
         }
 
         public function __destruct() {
-            \MeshMVC\Cross::$currentController = null;
         }
 
         public function addView($view) {
