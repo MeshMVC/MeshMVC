@@ -1,4 +1,4 @@
 <?php
 	if ($recursion_level > 999999)
-		die("Template surpasses maximum recursion level. (Prevented infinit loop from crashing server)");
+		throw new Exception("Template surpasses maximum recursion level. (Prevented infinite loop from crashing server)");
 

@@ -15,6 +15,36 @@ namespace MeshMVC;
 			return $user->access($access_level);
 		}
 
+        function download($url, $proxy = null) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_PROXY, $proxy);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, \MeshMVC\Environment::PROXY_AGENT);
+            curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+            if (\MeshMVC\Environment::DEFAULT_PROXY_TIMEOUT_MS != null) {
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, \MeshMVC\Environment::DEFAULT_PROXY_TIMEOUT_MS);
+            }
+
+            $output = curl_exec($ch);
+
+            // get proxy errors
+            if (curl_getinfo($ch, CURLINFO_PROXY_ERROR) != CURLPX_OK) {
+                throw new Exception("Proxy(".CURLOPT_PROXY.") error downloading: ".$url);
+            }
+
+            // get response code to ensure
+            if (\MeshMVC\Environment::DEFAULT_PROXY_VALIDATE_RESPONSE_CODES) {
+                $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+                if ($code != 200) throw new Exception($code." error downloading: ".$url);
+            }
+
+            curl_close($ch);
+            return $output;
+        }
+
 		// q(number) = query argument (starts with 0)
 		// q(string) = test if current url matches string 
 		public static function queryURL($arg_number='all', $controller=null, $dependencies=[]) {

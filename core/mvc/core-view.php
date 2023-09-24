@@ -6,7 +6,7 @@
 	class View {
 		private $from = ''; 	// from template
 		private $filter = '';
-		private $to = ''; 	// to selector
+		private $to = ''; 	// to selector -> default override all previous templates
 		private $cache = false; // caching
 
 		private $display_type = "html"; // html, text or json

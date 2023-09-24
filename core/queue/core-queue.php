@@ -50,66 +50,123 @@
             }
         }
 
-        public static function parse($from="", $currentOutput="", $filter="", $to="", $display_type="html", $display_mode="append", $use_models=true, $recursion_level=0) {
+        public static function parse($from="", $function_output="", $filter="", $to="", $display_type="html", $display_mode="append", $use_models=true, $recursion_level=0) {
+
             require PATH . "core/queue/parser/recursion-safe.php";
             $recursion_level++;
 
-            $model = \MeshMVC\Models::getAll();
-            $stack = [];
+            $model = null;
+            if ($use_models) $model = \MeshMVC\Models::getAll();
 
-            require PATH . "core/queue/parser/fetch-type.php";
+            $processed_output = "";
 
-            foreach ($stack as $this_output) {
-                if ($use_models && count($model) > 0) {
-                    ob_start();
-                    eval("?>" . $this_output . "<?php");
-                    $this_output = ob_get_clean();
+            // no view template specified
+            if ($from == "") throw new \Exception("No view template specified!");
 
-                    if (\MeshMVC\Environment::DEBUG) {
-                        $i = 0;
-                        foreach (self::$resources as $this_resource) {
-                            $this_resource_filename = $this_resource["file"];
-                            $this_resource_region = $this_resource["region"];
-                            $i++;
-                            Models()->add("stats.resource_" . $i, "File: " . $this_resource_filename . ", Region: " . $this_resource_region);
+            // TODO: add options to download via FTP, S3, etc
+            // view is string or file
+            if (substr($from, 0, 7)=='http://' || substr($from, 0, 8)=='https://') {
+
+                // fetch url content into output
+                try {
+                    $fetch = \MeshMVC\Tools::download($from);
+                } catch (Exception $e) {
+                    // TODO: custom callback option
+                    $fetch = false;
+                }
+                if ($fetch !== false) {
+                    $processed_output = $fetch;
+                } else {
+                    // couldn't fetch url
+                    throw new \Exception("Couldn't fetch URL: ".$from);
+                }
+
+            } else {
+
+                // find all views
+                $paths_to_load = [];
+                foreach (\MeshMVC\Environment::$SEEDS as $dir) {
+                    [$seed_type, $seeded_path] = explode(":", $dir);
+                    if ($seed_type === "view") {
+                        $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
+                    }
+                }
+                $paths_to_load = array_unique($paths_to_load);
+
+                // look for exact filename match
+                $foundExactMatch = false;
+                foreach ($paths_to_load as $possibleViewMatchFilename) {
+                    if ($possibleViewMatchFilename == $from) {
+                        $foundExactMatch = true;
+                        $processed_output = file_get_contents($from);
+                        break;
+                    }
+                }
+
+                // on fail, look for basename match
+                if ($foundExactMatch == false) {
+                    $foundBaseMatch = false;
+                    foreach ($paths_to_load as $possibleViewMatchFilename) {
+                        if (basename($possibleViewMatchFilename) == $from) {
+                            $foundBaseMatch = true;
+                            $processed_output = file_get_contents($possibleViewMatchFilename);
+                            break;
                         }
                     }
-                }
 
-                if ($this_output !== "" && $filter !== "") {
-                    $place_me = \phpQuery::newDocumentHTML($this_output)[$filter];
-                } else {
-                    $place_me = $this_output;
-                }
-
-                $destination = \phpQuery::newDocumentHTML($currentOutput);
-
-                if ($to === "") {
-                    // override all previous templates if no target specified
-                    $currentOutput = $place_me;
-                } else {
-                    $content = ($display_type === "html") ? $place_me : htmlentities($place_me);
-
-                    switch ($display_mode) {
-                        case "prepend":
-                            $destination[$to]->prepend($content);
-                            break;
-                        case "append":
-                            $destination[$to]->append($content);
-                            break;
-                        case "replace":
-                            $destination[$to]->replaceWith($content);
-                            break;
-                        case "inner":
-                            $destination[$to]->html($content);
-                            break;
-                        default:
-                            $destination[$to]->append($content);
+                    if ($foundBaseMatch == false) {
+                        throw new \Exception("No local view file found for: ".$from."\nTIP: for remote files use 'HTTP' prefix.");
                     }
-
-                    return  $destination->html();
                 }
             }
+
+            if ($use_models && count($model) > 0) {
+                ob_start();
+                eval("?>" . $return_output . "<?php");
+                $processed_output = ob_get_clean();
+
+                if (\MeshMVC\Environment::DEBUG) {
+                    foreach (self::$resources as $this_resource) {
+                        $this_resource_filename = $this_resource["file"];
+                        $this_resource_region = $this_resource["region"];
+                    }
+                }
+            }
+
+            if ($processed_output !== "" && $filter !== "") {
+                $place_me = \phpQuery::newDocumentHTML($processed_output)[$filter]->html();
+            } else {
+                $place_me = $processed_output;
+            }
+
+            if ($to == "") {
+                // override all previous templates if no target specified
+                return $place_me;
+            }
+
+            // wrapper hack to get outerHTML
+            $destination = \phpQuery::newDocumentHTML("<div>".$function_output."</div>");
+            $content = ($display_type === "html") ? $place_me : htmlentities($place_me);
+
+            switch ($display_mode) {
+                case "prepend":
+                    $destination[$to]->prepend($content);
+                    break;
+                case "append":
+                    $destination[$to]->append($content);
+                    break;
+                case "replace":
+                    $destination[$to]->replaceWith($content);
+                    break;
+                case "inner":
+                    $destination[$to]->html($content);
+                    break;
+                default:
+                    $destination[$to]->append($content);
+            }
+
+            // using wrapper hack to get outerHTML
+            return $destination->html();
         }
 
         public static function output()
