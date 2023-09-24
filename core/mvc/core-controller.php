@@ -6,11 +6,22 @@
 	class Controller {
 
 		// unit tests results
-		private $unit_tests = array();
-		public $needed_controllers = array();
+		private $unit_tests = [];
+
+		private $loaded_views = [];
+
+		public $needed_controllers = [];
 
         public function __construct() {
-            \MeshMVC\Cross:$currentController = $this;
+            \MeshMVC\Cross::$currentController = $this;
+        }
+
+        public function __destruct() {
+            \MeshMVC\Cross::$currentController = null;
+        }
+
+        public function addView($view) {
+            $this->loaded_views[] = $view;
         }
 
 		// Unit Testing
@@ -19,6 +30,7 @@
 			$this->note($log);
 			$this->unit_tests[] = true;
 		}
+
 		public function failed($log) {
 			// log failed test
 			$this->note($log);
@@ -34,25 +46,11 @@
 			return true;
 		}
 
-		public function needs($controller_list) {
-			if (is_array($controller_list)) {
-				    // when argument is an array, add to controllers list
-				foreach ($controller_list as $con) {
-					$this->needed_controllers[] = trim($con);
-				}
-			} else {
-				if (strpos($controller_list, ",") !== false) {
-				    // when string is comma separated, treat it as an array
-					$controllers_req = explode(",", $controller_list);
-					foreach ($controllers_req as $con) {
-						$this->needed_controllers[] = trim($con);
-					}
-				} else {
-					$this->needed_controllers[] = trim($controller_list);
-				}
-			}
-			return true;
-		}
+        public function needs($controller_list) {
+            $controllers = is_array($controller_list) ? $controller_list : explode(",", $controller_list);
+            $this->needed_controllers = array_merge($this->needed_controllers, array_map('trim', $controllers));
+            return true;
+        }
 
 		// MVC shortcuts
 		public function n($controller_list) {

@@ -13,39 +13,37 @@
 		private $display_mode = "append"; // or prepend, append, replace, replace_inner
 
 		private $use_models = true; // default: true (render models within brackets ex: "[user.email]") 
-		private $rendered = false;
+		private $doRenderOnDestruct = true;
 		private static $counted = 0;
 
         // constructor requires filename of view
         public function __construct($from) {
-            \MeshMVC\Cross:$currentView = $this;
+            \MeshMVC\Cross::$currentView = $this;
 			$this->from = $from;
 			return $this;
         }
 
         // automatically render view on destruction
-        public function __toString() {
-            $this->render($this->display_mode, null, $this->display_type);
+        public function __destruct() {
+            if ($this->doRenderOnDestruct) $this->render();
+            \MeshMVC\Cross::$currentView = null;
             return true;
         }
 
-        public function toString() {
-			if (!$this->rendered) {
-				//TODO: if cached with cache_key: output cache data
-				return Queue::parse($this->from, 'render', $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
-				$this->rendered = true;
- 			}
+        private function parseOutput($currentOutput) {
+            //TODO: if cached with cache_key: output cache data
+            return Queue::parse($this->from, $currentOutput, $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
         }
 
-		// manual view render
-		public function render($display_mode=null, $cache_key=null, $display_type=null) {
-			if ($display_mode != null) $this->display_mode = $display_mode;
-			if ($display_type != null) $this->display_type = $display_type;
-			if (!$this->rendered) {
-				//TODO: if cached with cache_key: output cache data
-				@Queue::parse($this->from, 'render', $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
-				$this->rendered = true;
- 			}
+        //return as string
+        public function toString() {
+            $this->doRenderOnDestruct = false;
+            return $this->parseOutput("");
+        }
+
+        // process render without output
+		public function render() {
+            \MeshMVC\Queue::$complete_output = $this->parseOutput(\MeshMVC\Queue::$complete_output);
 			return true;
 		}
 
@@ -67,7 +65,7 @@
 
 		// from template filename
 		public function from($from) {
-			if (\MeshMVC\Config::DEBUG) {
+			if (\MeshMVC\Environment::DEBUG) {
 				self::$counted++;
 				$myModel = new \MeshMVC\Model("template_".self::$counted, $from, "stats");
 			}
@@ -90,8 +88,8 @@
 			$this->display_type = $display_type;
 			return $this;
 		}
-		// replace_inner, prepend, append, replace
-		public function display_mode($display_mode) {
+		//  inner, prepend, append, replace
+		public function by($display_mode) {
 			$this->display_mode = $display_mode;
 			return $this;
 		}

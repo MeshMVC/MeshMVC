@@ -1,6 +1,14 @@
 <?php
 	/* This file contains shortcuts to functions and classes within namespaces */
 
+    function debug($obj) {
+        if (\MeshMVC\Environment::DEBUG) {
+            echo "<pre style='color: #333; font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; font-size:14px;'>";
+            var_dump($obj);
+            echo "</pre>";
+        }
+    }
+
 	// query access
 	function a($access_required) {
 		return MeshMVC\Tools::access($access_required);
@@ -25,13 +33,12 @@
 
 	// View obj
 	function view($filename) {
-		new \MeshMVC\View($filename).""; // trigger view __toString()
-		return \MeshMVC\Cross:$currentView;
+	    \MeshMVC\Cross::$currentController->addView(new \MeshMVC\View($filename));
+		return \MeshMVC\Cross::$currentView;
 	}
 
-	//
 	function needs($controllers) {
-	    $current_this = \MeshMVC\Cross:$currentController;
+	    $current_this = \MeshMVC\Cross::$currentController;
 		@$current_this->needs($controllers);
 		return $current_this;
 	}
@@ -69,4 +76,5 @@
 	function redirect($url) {
 		return \MeshMVC\Tools::redirect($url);
 	}
+
 ?>

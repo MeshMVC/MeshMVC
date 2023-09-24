@@ -12,7 +12,7 @@
 				$con = self::connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
                 $args = func_get_args();
 				if (count($args) > 0) {
-				    return self::query();
+				    return self::query($args);
 				} else {
 				    return $con;
 				}
@@ -61,7 +61,7 @@
 				$stmt =  self::$dblink->stmt_init();
 
 				// log sql query when in debug mode
-				if (\MeshMVC\Config::DEBUG) {
+				if (\MeshMVC\Environment::DEBUG) {
 					self::$counted++;
 					Model("sql_".self::$counted, str_replace("\t","",$query), "stats");
 					Model("sql_params".self::$counted, implode(", ", $args), "stats");

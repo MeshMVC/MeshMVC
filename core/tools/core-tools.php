@@ -18,28 +18,22 @@ namespace MeshMVC;
 		// q(number) = query argument (starts with 0)
 		// q(string) = test if current url matches string 
 		public static function queryURL($arg_number='all', $controller=null, $dependencies=[]) {
-			if ($arg_number=='all') {
-				return (isset($_GET['q'])) ? $_GET['q'] : '/';
-			} elseif (is_numeric($arg_number)) {
-				$array = explode('/', $_GET['q']);
-				if (isset($array[$arg_number])) {
-					return $array[$arg_number.''];
-				}
-			} elseif (!is_numeric($arg_number)) {
+            if ($arg_number === 'all') {
+                return $_GET['q'] ?? '/';
+            } elseif (is_numeric($arg_number)) {
+                $array = explode('/', $_GET['q']);
+                return $array[$arg_number] ?? '';
+            } elseif ($controller !== null) {
+                \MeshMVC\Router::$controllers_list[] = [$controller, $dependencies];
+            }
 
-                if ($controller != null) {
-                    \MeshMVC\Router::$controllers_list[]  = [$controller, $dependencies];
-                }
-
-				return self::inpath($arg_number);
-			}
-			return '';
+            return self::inpath($arg_number);
 		}
 
 		
 		// q(string) = test if current url matches string 
 		private static function inpath($url) {
-			$q = isset($_GET['q']) ? $_GET['q'] : "";
+			$q = $_GET['q'] ?? "";
 			return fnmatch($url, "/" . $q);
 		}
 
@@ -47,115 +41,91 @@ namespace MeshMVC;
 		// $this_controller_name, Array(), $this->obj_controllers, $invalid_controllers
 		public static function dig_dependencies($dep, $trail, &$objs,  &$invalid_controllers) {
 
-			// add trail
-			$trail[] = $dep;
+            // Add trail
+            $trail[] = $dep;
 
-			// detect infinite loop
-			$freqs = array_count_values($trail);
-			$freq_dep = $freqs[$dep];
+            // Detect infinite loop
+            $freq_dep = array_count_values($trail)[$dep] ?? 0;
 
-            // when 2 items are the same in the trail, this would cause an infinite loop
-			if ($freq_dep >= 2) {
-				foreach($trail as $invalid_controller) {
-					$invalid_controllers[$invalid_controller] = "Caught controller: ".$invalid_controller." in a loop (circular controller dependencies). Trail cancelled: ".implode(", ", $trail);
-				}
-				return Array();
-			}
+            // Handle infinite loop
+            if ($freq_dep >= 2) {
+                foreach ($trail as $invalid_controller) {
+                    $invalid_controllers[$invalid_controller] = "Caught controller: {$invalid_controller} in a loop (circular controller dependencies). Trail cancelled: " . implode(", ", $trail);
+                }
+                return [];
+            }
 
-			//  not found (invalid node)
-			if (!isset($objs[$dep])) {
-				foreach($trail as $invalid_controller) {
-					$invalid_controllers[$invalid_controller] = "Controller '".$dep."' not found. Trail cancelled: ".implode(", ", $trail);
-				}
-				return Array();
-			}
+            // Handle invalid node
+            if (!isset($objs[$dep])) {
+                foreach ($trail as $invalid_controller) {
+                    $invalid_controllers[$invalid_controller] = "Controller '{$dep}' not found. Trail cancelled: " . implode(", ", $trail);
+                }
+                return [];
+            }
 
-            // // check each child dependency as trail for infinite loops and invalid nodes (controllers with dependency missing)
-			$dep_children = $objs[$dep]->needed_controllers;
-			if (count($dep_children) > 0) {
-				foreach ($dep_children as $dependency) {
-					$ret_dump = self::dig_dependencies($dependency, $trail, $objs, $invalid_controllers);
-				}
-				return Array();
-			} else {
-				// when no child found, stop recursion
-				return Array();
-			}
+            // Check each child dependency for infinite loops and invalid nodes
+            $dep_children = $objs[$dep]->needed_controllers;
+            foreach ($dep_children as $dependency) {
+                self::dig_dependencies($dependency, $trail, $objs, $invalid_controllers);
+            }
+
+            return [];
 		}
 
 
-		//custom sort 
+		// custom sort
 		public static function prioritySorter($a, $b) {
-			if ($a == $b) return 0;
-			return ($a > $b) ? 1 : -1;
+			return $a <=> $b;
 		}
 
 
 		public static function Posted($var) {
-			if (isset($_POST[$var])) {
-				return $_POST[$var];
-			}
-			return "";
+			return $_POST[$var] ?? "";
 		}
 
 		public static function Got($var) {
-			if (isset($_POST[$var])) {
-				return true;
-			} else {
-				return false;
-			}
+			return isset($_POST[$var]);
 		}
 
 		// write to logs
 		public static function note($data) {
-			$log_file = PATH."logs/notes.log";
-			$fh = @fopen($log_file, 'a');
-			@fwrite($fh, $data."\n");
-			@fclose($fh);
+            $log_file = \MeshMVC\Environment::LOG_FILE;
+            if ($fh = fopen($log_file, 'a')) {
+                fwrite($fh, $data . PHP_EOL);
+                fclose($fh);
+            }
 		}
 
 		// validate email
-		public static function validate_email($email) {
-			$isValid = true;
-			$atIndex = strrpos($email, "@");
-			if (is_bool($atIndex) && !$atIndex) {
-				$isValid = false;
-			} else {
-				$domain = substr($email, $atIndex+1);
-				$local = substr($email, 0, $atIndex);
-				$localLen = strlen($local);
-				$domainLen = strlen($domain);
-				if ($localLen < 1 || $localLen > 64) {
-					// local part length exceeded
-					$isValid = false;
-				} else if ($domainLen < 1 || $domainLen > 255) {
-					// domain part length exceeded
-					$isValid = false;
-				} else if ($local[0] == '.' || $local[$localLen-1] == '.') {
-					// local part starts or ends with '.'
-					$isValid = false;
-				} else if (preg_match('/\\.\\./', $local)) {
-					// local part has two consecutive dots
-					$isValid = false;
-				} else if (!preg_match('/^[A-Za-z0-9\\-\\.]+$/', $domain)) {
-					// character not valid in domain part
-					$isValid = false;
-				} else if (preg_match('/\\.\\./', $domain)) {
-					// domain part has two consecutive dots
-					$isValid = false;
-				} else if (!preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/', str_replace("\\\\","",$local))) {
-					// character not valid in local part unless 
-					// local part is quoted
-					if (!preg_match('/^"(\\\\"|[^"])+"$/', str_replace("\\\\","",$local))) {
-						$isValid = false;
-					}
-				}
-				if ($isValid && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A"))) {
-					// domain not found in DNS
-					$isValid = false;
-				}
-			}
-			return $isValid;
+        public static function validate_email($email) {
+            $isValid = true;
+            $atIndex = strrpos($email, "@");
+
+            if (false === $atIndex) {
+                return false;
+            }
+
+            $domain = substr($email, $atIndex + 1);
+            $local = substr($email, 0, $atIndex);
+            $localLen = strlen($local);
+            $domainLen = strlen($domain);
+
+            if ($localLen < 1 || $localLen > 64
+                || $domainLen < 1 || $domainLen > 255
+                || $local[0] === '.' || $local[$localLen - 1] === '.'
+                || preg_match('/\\.\\./', $local)
+                || !preg_match('/^[A-Za-z0-9\\-\\.]+$/', $domain)
+                || preg_match('/\\.\\./', $domain)
+                || !preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/', str_replace("\\\\", "", $local))
+            ) {
+                return false;
+            }
+
+            if (!(checkdnsrr($domain, "MX") || checkdnsrr($domain, "A"))) {
+                return false;
+            }
+
+            return true;
 		}
 
 		// redirect user to new location
@@ -167,70 +137,82 @@ namespace MeshMVC;
 		// translate text
 		public static function translate($text = "") {
 			// on empty string, return current language code
-			if ($text == "") return $this->lang;
 			return $text;
 		}
-		
-		// send email
-		public static function email($to, $subject, $message) {
-			// normal headers
-			$num = md5(time()); 
-			$headers  = "From: ShiftSmith <noreply@".$_SERVER["SERVER_NAME"].".com>\r\n";
 
-			// This two steps to help avoid spam   
-			$headers .= "Message-ID: <".time()." TheSystem@".$_SERVER['SERVER_NAME'].">\r\n";
-			$headers .= "X-Mailer: PHP v".phpversion()."\r\n";         
+        public static function email($to, $subject, $message)
+        {
+            $from = \MeshMVC\Environment::SITE_NAME . " <noreply@" . $_SERVER["SERVER_NAME"] . ".com>";
 
-			// With message
-			$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers = array(
+                "From" => $from,
+                "Message-ID" => "<" . time() . "." . uniqid() . "@". $_SERVER['SERVER_NAME'] . ">",
+                "X-Mailer" => "PHP v" . phpversion(),
+                "MIME-Version" => "1.0",
+                "Content-Type" => "text/html; charset=UTF-8",
+                "Reply-To" => $from,
+                "Return-Path" => $from,
+                "X-Priority" => "3",
+                "X-MSMail-Priority" => "Normal",
+                "X-Mailgun-Native-Send" => "true"
+            );
 
-			mail($to, $subject, $message, $headers);
-		}
+            $header_lines = [];
+            foreach ($headers as $key => $value) {
+                $header_lines[] = $key . ": " . $value;
+            }
 
-		public static function endsWith($haystack, $needle) {
-			$length = strlen($needle);
-			if ($length == 0) {
-				return true;
-			}
+            $header_string = implode("\r\n", $header_lines);
 
-			return (substr($haystack, -$length) === $needle);
-		}
+            $success = mail($to, $subject, $message, $header_string);
 
+            if (!$success) {
+                return false;
+            }
 
-		public static function search_files($pattern, $flags = 0) {
-			$files = glob($pattern, $flags);
-			foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
-				$files = array_merge(
-					[],
-					...[$files, self::search_files($dir . "/" . basename($pattern), $flags)]
-				);
-			}
-			return $files;
-		}
+            return true;
+        }
 
-		private static function search_files_matching_helper($filename, $dir, &$results = array()){
-			$files = glob($dir);
+        public static function endsWith($haystack, $needle) {
+            $length = strlen($needle);
+            if ($length === 0) {
+                return true;
+            }
 
-			foreach($files as $current_file) {
-				$path = realpath($filename);
-				if(!is_dir($path)) {
-					if ( (strtolower($filename)) == (strtolower(basename($path))) ) {
-						$results[] = $path;
-					} elseif ( fnmatch(strtolower(basename($filename)), strtolower(basename($path))) ) {
-						$results[] = $path;
-					}
-				} else if($value != "." && $value != "..") {
-					// on directory, browse
-					self::search_files_matching_helper($filename, $path, $results);
-				}
-			}
-			return $results;
-	 	}
+            return substr($haystack, -$length) === $needle;
+        }
+
+        public static function search_files($pattern, $flags = 0) {
+            $files = glob($pattern, $flags);
+
+            foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
+                $files = array_merge($files, self::search_files($dir . '/' . basename($pattern), $flags));
+            }
+
+            return $files;
+        }
+
+        private static function search_files_matching_helper($filename, $dir, &$results = []) {
+            $files = glob($dir);
+
+            foreach ($files as $current_file) {
+                if (!is_dir($current_file)) {
+                    $current_filename = strtolower(basename($current_file));
+                    $search_filename = strtolower(basename($filename));
+
+                    if ($current_filename === $search_filename || fnmatch($search_filename, $current_filename)) {
+                        $results[] = realpath($current_file);
+                    }
+                } elseif ($current_file !== "." && $current_file !== "..") {
+                    self::search_files_matching_helper($filename, $current_file, $results);
+                }
+            }
+
+            return $results;
+        }
 
 		public static function search_files_matching($filename, $dir){
-
 			$results = self::search_files_matching_helper($filename, $dir);
-
 			return $results;
 		}
 		
