@@ -3,16 +3,6 @@
 /* PHP Files can contain multiple controllers. */
 
 
-// Homepage controller:
-class _home extends \MeshMVC\Controller {
-    function sign() {
-        return route("/home") && needs("_page_components"); // _html controller class dependency
-    }
-    function run() {
-        view("home.html")
-        ->to("html body"); // appends page contents to document body
-    }
-}
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
     function sign() {
@@ -35,5 +25,16 @@ class _page_components extends \MeshMVC\Controller {
         view("title.html")
         ->to("html body header"); // appends to body header element
 
+    }
+}
+
+// Homepage controller:
+class _home extends \MeshMVC\Controller {
+    function sign() {
+        return route("/home") && needs("_page_components"); // _html controller class dependency
+    }
+    function run() {
+        view("home.html")
+        ->to("html body"); // appends page contents to document body
     }
 }

@@ -21,23 +21,27 @@
         }
 
         public function addView($view) {
+            \MeshMVC\Cross::$currentController = $this;
             $this->loaded_views[] = $view;
         }
 
 		// Unit Testing
 		public function passed($log) {
+            \MeshMVC\Cross::$currentController = $this;
 			// log success test
 			$this->note($log);
 			$this->unit_tests[] = true;
 		}
 
 		public function failed($log) {
+            \MeshMVC\Cross::$currentController = $this;
 			// log failed test
 			$this->note($log);
 			$this->unit_tests[] = false;
 		}
 
 		public function unit_tests_passed() {
+            \MeshMVC\Cross::$currentController = $this;
 			if (count($this->unit_tests) > 0) {
 				if (in_array(false, $this->unit_tests)) {
 					return false;
@@ -47,6 +51,7 @@
 		}
 
         public function needs($controller_list) {
+            \MeshMVC\Cross::$currentController = $this;
             $controllers = is_array($controller_list) ? $controller_list : explode(",", $controller_list);
             $this->needed_controllers = array_merge($this->needed_controllers, array_map('trim', $controllers));
             return true;
