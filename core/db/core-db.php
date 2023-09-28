@@ -60,12 +60,7 @@
 				$query = array_shift($args);
 				$stmt =  self::$dblink->stmt_init();
 
-				// log sql query when in debug mode
-				if (\MeshMVC\Environment::DEBUG) {
-					self::$counted++;
-					Model("sql_".self::$counted, str_replace("\t","",$query), "stats");
-					Model("sql_params".self::$counted, implode(", ", $args), "stats");
-				}
+				self::$counted++;
 
 				// ex: INSERT INTO CountryLanguage VALUES (?, ?);
 				if ($stmt->prepare($query)) {

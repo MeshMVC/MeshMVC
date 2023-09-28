@@ -4,16 +4,16 @@
 
 	// Core Controller class for all controller objects to extend
 	class View {
-		private $from = ''; 	// from template
-		private $filter = '';
-		private $to = ''; 	// to selector -> default override all previous templates
-		private $cache = false; // caching
+		public $from = ''; 	// from template
+        public $filter = '';
+        public $to = ''; 	// to selector -> default override all previous templates
+        public $cache = false; // caching
 
-		private $display_type = "html"; // html, text or json
-		private $display_mode = "append"; // or prepend, append, replace, replace_inner
+        public $display_type = "html"; // html, text or json
+        public $display_mode = "append"; // or prepend, append, replace, replace_inner
 
-		private $use_models = true; // default: true (render models within brackets ex: "[user.email]") 
-		private $doRenderOnDestruct = true;
+        public $use_models = true; // default: true (render models within brackets ex: "[user.email]")
+        public $doRenderOnDestruct = true;
 		private static $counted = 0;
 
         // constructor requires filename of view
@@ -21,11 +21,6 @@
             \MeshMVC\Cross::$currentView = $this;
 			$this->from = $from;
 			return $this;
-        }
-
-        // automatically render view on destruction
-        public function __destruct() {
-            if ($this->doRenderOnDestruct) $this->render();
         }
 
         private function parseOutput($currentOutput) {
@@ -70,11 +65,7 @@
 		// from template filename
 		public function from($from) {
             \MeshMVC\Cross::$currentView = $this;
-			if (\MeshMVC\Environment::DEBUG) {
-				self::$counted++;
-				$myModel = new \MeshMVC\Model("template_".self::$counted, $from, "stats");
-			}
-			
+            self::$counted++;
 			$this->from = $from;
 			return $this;
 		}

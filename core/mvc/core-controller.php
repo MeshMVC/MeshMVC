@@ -8,7 +8,7 @@
 		// unit tests results
 		private $unit_tests = [];
 
-		private $loaded_views = [];
+		public $loaded_views = [];
 
 		public $needed_controllers = [];
 

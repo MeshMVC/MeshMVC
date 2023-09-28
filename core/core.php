@@ -14,6 +14,7 @@
 	define("PATH", $_SERVER["DOCUMENT_ROOT"]."/"); // Must include trailing slash
 
 	// Includes
+	require_once PATH."core/mvc/core-logger.php";
 	require_once PATH."core/tools/core-tools.php";
 
 	// Configs

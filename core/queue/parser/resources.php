@@ -23,11 +23,6 @@ foreach (self::$resources as $filename) {
 
 	if ($place_me != "") {
 
-		if (\MeshMVC\Environment::DEBUG) {
-			$i++;
-			Model("resource_".$i, "File: ".$this_resource_filename.", Region: ".$this_resource_region, "stats");
-		}
-
 		// set destination HTML
 		$destination = qp($this_output);
 		$region = $this_resource_region;

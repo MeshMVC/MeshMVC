@@ -4,10 +4,6 @@
 	require_once(PATH.'core/lib/phpquery/phpQuery-onefile.php');
 	require_once(PATH."core/lib/topsort/vendor/autoload.php");
 
-	class Stats {
-		public static $logs = Array(); 		
-	}
-	
 	class Queue {
 		public static $complete_output = "";
 
@@ -144,8 +140,8 @@
                 return $place_me;
             }
 
-            // wrapper hack to get outerHTML
-            $destination = \phpQuery::newDocumentHTML("<div>".$function_output."</div>");
+            //  get outerHTML
+            $destination = \phpQuery::newDocumentHTML($function_output);
             $content = ($display_type === "html") ? $place_me : htmlentities($place_me);
 
             switch ($display_mode) {
@@ -166,7 +162,7 @@
             }
 
             // using wrapper hack to get outerHTML
-            return $destination->html();
+            return $destination;
         }
 
         public static function output()
@@ -220,15 +216,16 @@
                 $unit_tests_failed = false;
                 foreach ($this->obj_controllers as $cname => $controller) {
                     if (method_exists($controller, 'test')) {
+                        \MeshMVC\Cross::$currentController = $controller;
                         $do_unit_test = $controller->test();
                         if (!$controller->unit_tests_passed()) {
-                            // Stats::$logs[] = "unit_test_" . ($i + 1) . $cname . " fail";
+                            // controller unit tests failed
                             $unit_tests_failed = true;
                         } else {
-                            // Stats::$logs[] = "unit_test_" . ($i + 1) . $cname . " pass";
+                            // controller unit tests passed
                         }
                     } else {
-                        // Stats::$logs[] = "unit_test_" . ($i + 1) . $cname . " has no unit tests";
+                        // controller has no unit tests
                     }
                 }
 
@@ -242,6 +239,7 @@
             // ensure controllers validate when a validation function is found
             foreach ($this->obj_controllers as $cname => $controller) {
                 if (method_exists($controller, 'sign')) {
+                    \MeshMVC\Cross::$currentController = $controller;
                     $validator_priority = $controller->sign();
                     if ($validator_priority !== false) {
                         // when controller validates
@@ -290,11 +288,6 @@
             foreach ($controllers_sorted as $i => $cname) {
                 $cname = trim($cname);
                 if ($cname !== "") {
-                    // log controller
-                    if (\MeshMVC\Environment::DEBUG) {
-                        Stats::$logs[] = "controller_" . ($i + 1) . $cname;
-                    }
-
                     // find controller of class name
                     $controller = $this->obj_controllers[$cname];
                     $controller->index = $controller_index++;
@@ -303,6 +296,12 @@
                     if (method_exists($controller, 'run')) {
                         \MeshMVC\Cross::$currentController = $controller;
                         $controller->run();
+                        // or render each views
+                        foreach ($controller->loaded_views as $view) {
+                            if ($view->doRenderOnDestruct) {
+                                self::$complete_output = Queue::parse($view->from, self::$complete_output, $view->filter, $view->to, $view->display_type, $view->display_mode, $view->use_models, 0);
+                            }
+                        }
                     }
                 }
             }
