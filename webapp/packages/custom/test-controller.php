@@ -1,5 +1,7 @@
 <?php
 
+// TODO: fix apps with namespaces
+
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
     function sign() {
@@ -9,6 +11,8 @@ class _html extends \MeshMVC\Controller {
         view("html.html");
     }
 }
+
+// TODO: render models as json
 
 class Page extends \MeshMVC\Model {
     public static $title = "MeshMVC";

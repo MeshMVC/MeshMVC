@@ -9,6 +9,9 @@
 		// REQUIRED: define if debugging or not
 		public const DEBUG = true;
 
+        // app namespace
+        public const APP_NAMESPACE = "myapp";
+
         // download settings
 	    public const DEFAULT_PROXY_AGENT = "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)";
 	    public const DEFAULT_PROXY_TIMEOUT_MS = null; // no timeouts by default
