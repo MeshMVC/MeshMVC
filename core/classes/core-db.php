@@ -1,5 +1,6 @@
 <?php
-	namespace MeshMVC;
+
+namespace MeshMVC;
 
 	class Database {
 		static private $dbtype;
@@ -9,7 +10,7 @@
 
 		public function __construct() {
 			if (defined("DB_HOST") && defined("DB_USER") && defined("DB_PASS") && defined("DB_NAME")) {
-				$con = self::connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+				$con = self::connect(\MeshMVC\DB_HOST, \MeshMVC\DB_USER, \MeshMVC\DB_PASS, \MeshMVC\DB_NAME);
                 $args = func_get_args();
 				if (count($args) > 0) {
 				    return self::query($args);
@@ -35,7 +36,7 @@
 
 				return self::$dblink;
 			
-			} catch (Exception $e) {
+			} catch (\MeshMVC\Exception $e) {
 
 				return false;
 				
@@ -80,7 +81,7 @@
 					$ret[] = $row;
 				}
 				return $ret;
-			} catch (Exception $e) {
+			} catch (\MeshMVC\Exception $e) {
 				return false;
 			}
 		}

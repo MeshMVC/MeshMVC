@@ -1,6 +1,6 @@
 <?php
 
-	namespace MeshMVC;
+namespace MeshMVC;
 
 	class Logger {
 		public static $verbose = Array();

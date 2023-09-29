@@ -1,8 +1,9 @@
 <?php
 	namespace MeshMVC;
-	
-	require_once(PATH.'core/lib/phpquery/phpQuery-onefile.php');
-	require_once(PATH."core/lib/topsort/vendor/autoload.php");
+
+    // include core libs
+	require_once(PATH . 'core/lib/phpquery/phpQuery-onefile.php');
+	require_once(PATH . "core/lib/topsort/vendor/autoload.php");
 
 	class Queue {
 		public static $complete_output = "";
@@ -21,7 +22,7 @@
             foreach (\MeshMVC\Environment::$SEEDS as $dir) {
                 [$seed_type, $seeded_path] = explode(":", $dir);
                 if ($seed_type === "controller") {
-                    $paths_to_load = array_merge($paths_to_load, Tools::search_files($seeded_path));
+                    $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
                 }
             }
 
@@ -48,7 +49,9 @@
 
         public static function parse($from="", $function_output="", $filter="", $to="", $display_type="html", $display_mode="append", $use_models=true, $recursion_level=0) {
 
-            require PATH . "core/queue/parser/recursion-safe.php";
+            if ($recursion_level > 999999)
+                throw new \Exception("Template surpasses maximum recursion level. (Prevented infinite loop from crashing server)");
+
             $recursion_level++;
 
             $model = null;
@@ -66,7 +69,7 @@
                 // fetch url content into output
                 try {
                     $fetch = \MeshMVC\Tools::download($from);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     // TODO: custom callback option
                     $fetch = false;
                 }
@@ -110,15 +113,17 @@
                         }
                     }
 
+                    // when view can't be found by basename nor by exact filename
                     if ($foundBaseMatch == false) {
-                        throw new \Exception("No local view file found for: ".$from."\nTIP: for remote files use 'HTTP' prefix.");
+                        // take view $from as output
+                        $processed_output = $from;
                     }
                 }
             }
 
             if ($use_models && count($model) > 0) {
                 ob_start();
-                eval("?>" . $return_output . "<?php");
+                eval("?>" . $processed_output . "<?php");
                 $processed_output = ob_get_clean();
 
                 if (\MeshMVC\Environment::DEBUG) {
@@ -177,7 +182,7 @@
                     [$seed_type, $seeded_path] = explode(":", $dir);
 
                     if ($seed_type === "css" || $seed_type === "js") {
-                        $paths_to_load = array_merge($paths_to_load, Tools::search_files($seeded_path));
+                        $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
                     }
                 }
 
@@ -255,8 +260,10 @@
                 }
             }
 
+            //debug($priority_controllers);
             // sort controllers by highest priority to lowest
-            uasort($priority_controllers, 'MeshMVC\Tools::prioritySorter');
+            uasort($priority_controllers, '\MeshMVC\Tools::prioritySorter');
+            //debug($priority_controllers);
 
             // prevent infinite loops & dependencies to controllers that don't exist
             $invalid_controllers = [];
@@ -312,6 +319,6 @@
 	}
 
 	// Run Core
-	$core = new Queue();
+	$core = new \MeshMVC\Queue();
 	$core->process();
 ?>

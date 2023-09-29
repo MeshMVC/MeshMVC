@@ -14,24 +14,24 @@
 	define("PATH", $_SERVER["DOCUMENT_ROOT"]."/"); // Must include trailing slash
 
 	// Includes
-	require_once PATH."core/mvc/core-logger.php";
-	require_once PATH."core/tools/core-tools.php";
+	require_once PATH."core/classes/core-logger.php";
+	require_once PATH."core/classes/core-tools.php";
 
 	// Configs
-	require_once PATH."core/setup/core-load-configs.php";
+	require_once PATH."core/classes/core-load-configs.php";
 
 	// routes (f=*, !q=*)
-	require_once PATH."core/route/route.php";
+	require_once PATH."core/classes/core-route.php";
 	
 	// MVC
-	require_once PATH."core/db/core-db.php";
-	require_once PATH."core/mvc/core-cross.php";
-	require_once PATH."core/mvc/core-model.php";
-	require_once PATH."core/mvc/core-models.php";
-	require_once PATH."core/mvc/core-view.php";
-	require_once PATH."core/mvc/core-controller.php";
-	require_once PATH."core/mvc/core-shortcuts.php";
+	require_once PATH."core/classes/core-db.php";
+	require_once PATH."core/classes/core-cross.php";
+	require_once PATH."core/classes/core-model.php";
+	require_once PATH."core/classes/core-models.php";
+	require_once PATH."core/classes/core-view.php";
+	require_once PATH."core/classes/core-controller.php";
+	require_once PATH."core/classes/core-shortcuts.php";
 
 	// Execution queue start
-	require_once PATH."core/queue/core-queue.php";
+	require_once PATH."core/classes/core-queue.php";
 ?>

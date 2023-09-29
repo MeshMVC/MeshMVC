@@ -1,6 +1,6 @@
 <?php
 
-	namespace MeshMVC;
+namespace MeshMVC;
 
 	// chainable class
 	class User  {

@@ -1,6 +1,6 @@
 <?php
 
-	namespace MeshMVC;
+namespace MeshMVC;
 
 	// Core Controller class for all controller objects to extend
 	class Controller {
@@ -69,8 +69,8 @@
 		public function requires($controller_list) {
 			return $this->needs($controller_list);
 		}
-		public function View() {
-			return new \MeshMVC\View();
+		public function view($from) {
+			return new \MeshMVC\View($from);
 		}
 		public function Group() {
 			return new \MeshMVC\Model();

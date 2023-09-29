@@ -1,7 +1,6 @@
 <?php
 
-/* PHP Files can contain multiple controllers. */
-
+// namespace myapp;
 
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
@@ -30,11 +29,24 @@ class _page_components extends \MeshMVC\Controller {
 
 // Homepage controller:
 class _home extends \MeshMVC\Controller {
+
     function sign() {
         return route("/home") && needs("_page_components"); // _html controller class dependency
     }
     function run() {
         view("home.html")
         ->to("html body"); // appends page contents to document body
+    }
+}
+
+class _resume extends \MeshMVC\Controller {
+
+    function sign() {
+        return route("/resume") && needs("_page_components"); // _html controller class dependency
+    }
+    function run() {
+        $output = nl2br(view("https://luclaverdure.com/wp-content/uploads/CV-Luc-Laverdure-EN.txt")->toString());
+        view($output)
+            ->to("html body"); // appends page contents to document body
     }
 }

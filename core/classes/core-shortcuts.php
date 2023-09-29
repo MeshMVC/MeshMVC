@@ -11,29 +11,29 @@
 
 	// query access
 	function a($access_required) {
-		return MeshMVC\Tools::access($access_required);
+		return \MeshMVC\Tools::access($access_required);
 	}
 	function access($access_required) {
-		return MeshMVC\Tools::access($access_required);
+		return \MeshMVC\Tools::access($access_required);
 	}
 	
 	
 	// query url
 	function q($argNumber_or_inPathString) {
-		return MeshMVC\Tools::queryURL($argNumber_or_inPathString);
+		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
 	}
 	function route($argNumber_or_inPathString) {
-		return MeshMVC\Tools::queryURL($argNumber_or_inPathString);
+		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
 	}
 
 	// query url
 	function t($translate_string_id) {
-		return MeshMVC\Tools::translate($translate_string_id);
+		return \MeshMVC\Tools::translate($translate_string_id);
 	}
 
 	// View obj
 	function view($filename) {
-	    \MeshMVC\Cross::$currentController->addView(new \MeshMVC\View($filename));
+		\MeshMVC\Cross::$currentController->addView(new \MeshMVC\View($filename));
 		return \MeshMVC\Cross::$currentView;
 	}
 
@@ -64,7 +64,7 @@
 
 	// Database wrapper
 	function db($query) {
-		return new MeshMVC\Database($query);
+		return new \MeshMVC\Database($query);
 	}
 
 	function posted($arg) {

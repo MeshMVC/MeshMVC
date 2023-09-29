@@ -1,6 +1,6 @@
 <?php
 
-	namespace MeshMVC;
+namespace MeshMVC;
 
 	// Core Controller class for all controller objects to extend
 	class View {
@@ -26,7 +26,7 @@
         private function parseOutput($currentOutput) {
             \MeshMVC\Cross::$currentView = $this;
             //TODO: if cached with cache_key: output cache data
-            return Queue::parse($this->from, $currentOutput, $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
+            return \MeshMVC\Queue::parse($this->from, $currentOutput, $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
         }
 
         //return as string
@@ -99,6 +99,5 @@
 			$this->use_models = $use_models;
 			return $this;
 		}
-
 
 	}
