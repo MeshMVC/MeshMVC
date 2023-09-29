@@ -1,7 +1,5 @@
 <?php
 
-// namespace myapp;
-
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
     function sign() {
@@ -12,6 +10,10 @@ class _html extends \MeshMVC\Controller {
     }
 }
 
+class Page extends \MeshMVC\Model {
+    public static $title = "MeshMVC";
+}
+
 // Page components controller to ensure controllers fire in order
 // (multiple controllers can fire for the same page/route/api)
 class _page_components extends \MeshMVC\Controller {
@@ -19,11 +21,10 @@ class _page_components extends \MeshMVC\Controller {
         return route("/*") && needs("_html");
     }
     function run() {
-        // multiple views can trigger per controller
+        model("page", new Page());
 
         view("title.html")
-        ->to("html body header"); // appends to body header element
-
+        ->to("html head"); // appends to body header element
     }
 }
 

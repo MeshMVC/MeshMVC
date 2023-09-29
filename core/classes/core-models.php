@@ -16,9 +16,8 @@ namespace MeshMVC;
             return $this;
 		}
 
-        public function add($name, $value) {
+        public static function add($name, $value) {
             self::$models[$name] = $value;
-			return $this;
         }
 
         public function remove($name) {

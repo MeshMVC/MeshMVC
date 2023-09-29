@@ -44,8 +44,15 @@
 	}
 
 	// Model obj
-	function model($name, $value) {
-		return new \MeshMVC\Models($key, $value);
+	function model($name, $instance = null) {
+		// when no instance defined
+		if ($instance == null) {
+			// return model
+			return \MeshMVC\Models::get($name);
+		}
+
+		// add new model by default
+		@\MeshMVC\Models::add($name, $instance);
 	}
 
 	// Model Group obj
