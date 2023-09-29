@@ -6,9 +6,13 @@ foreach ($configFiles as $configFile) {
 }
 
 // Load environment-specific config
-$envConfigFile = PATH . "config/" . \MeshMVC\Config::ENV . ".env.php";
+$config_filename = "config/" . \MeshMVC\Config::ENV . ".env.php";
+$envConfigFile = PATH . $config_filename;
 if (file_exists($envConfigFile)) {
     include $envConfigFile;
+} else {
+    echo "Expected environment config file not found! Create the file: \n".$config_filename;
+    die();
 }
 
 // Set error display settings based on debug mode
