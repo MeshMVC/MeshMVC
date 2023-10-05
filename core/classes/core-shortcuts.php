@@ -22,8 +22,8 @@
 	function q($argNumber_or_inPathString) {
 		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
 	}
-	function route($argNumber_or_inPathString) {
-		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
+	function route($url) {
+		return \MeshMVC\Tools::queryURL($url);
 	}
 
 	// query url

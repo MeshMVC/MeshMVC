@@ -12,7 +12,7 @@ class _html extends \MeshMVC\Controller {
     }
 }
 
-// TODO: render models as json
+// TODO: render models as json for api access
 
 class Page extends \MeshMVC\Model {
     public static $title = "MeshMVC";

@@ -4,7 +4,7 @@
 
 	class Environment extends \MeshMVC\Config {
 
-		public const SITE_NAME = "MeshMVC (".self::ENV.")";
+		public static $site_name = "MeshMVC";
 
 		// REQUIRED: define if debugging or not
 		public const DEBUG = true;
@@ -17,10 +17,12 @@
 	    public const DEFAULT_PROXY_TIMEOUT_MS = null; // no timeouts by default
 	    public const DEFAULT_PROXY_VALIDATE_RESPONSE_CODES = true; // returns an error when response code isn't 200 (OK)
 
+        public $storage = [
+            "myS3" => new \MeshMVC\S3(),
+            "mySFTP" => new \MeshMVC\SFTP(),
+        ];
+
 	    public const DB_NAME = "";
-	    public const DB_HOST = "";
-	    public const DB_USER = "";
-	    public const DB_PASS = "";
 
 	    public const AWS_S3_KEY = "";
 
@@ -28,10 +30,12 @@
 
         // REQUIRED: directories search patterns (can be modified)
         public static $SEEDS = array(
+            // libraries search pattern
+            "lib:webapp/packages/plugins/*.php",
             // views search pattern
             "view:webapp/*.*",
             // controllers search pattern
-            "controller:webapp/*.php",
+            "controller:webapp/packages/custom/*.php",
             // css auto-discovery search pattern
             "css:webapp/*.css",
             // js auto-discovery search pattern
@@ -39,6 +43,10 @@
             // media files search pattern
             "media:webapp/*.*"
         );
+
+        public function __construct() {
+            self::$site_name = self::$site_name ." (".self::ENV.")";
+        }
 
 	}
 
