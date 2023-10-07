@@ -10,9 +10,9 @@ namespace MeshMVC;
 		public function __construct($name=null, $value = null) {
             if ($name != null) {
                 if ($value == null) {
-                    return self::$models[$name];
+                    return $this->get($name);
                 } else {
-                    self::$models[$name] = $value;
+                    @$this->add($name, $value);
                 }
             }
             return $this;
@@ -39,8 +39,9 @@ namespace MeshMVC;
         public static function json($withfunctions = true) {
             $data = [];
             foreach (self::$models as $name => $instance) {
-                $data[] = json_decode($instance->json($withfunctions));
+                $data = array_merge($data, json_decode($instance->json($withfunctions), true));
             }
+
             return json_encode($data);
         }
 

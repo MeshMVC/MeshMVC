@@ -79,6 +79,7 @@ class _models_test extends \MeshMVC\Controller {
     function run() {
         echo models()
             ->add("test", new SimpleModel())
+            ->add("page", new Page())
             ->json();
     }
 
