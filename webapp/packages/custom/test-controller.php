@@ -1,6 +1,7 @@
 <?php
 
 // TODO: fix apps with namespaces
+// namespace namespace_test
 
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
@@ -11,8 +12,6 @@ class _html extends \MeshMVC\Controller {
         view("html.html");
     }
 }
-
-// TODO: render models as json for api access
 
 class Page extends \MeshMVC\Model {
     public static $title = "MeshMVC";
@@ -81,6 +80,17 @@ class _models_test extends \MeshMVC\Controller {
             ->add("test", new SimpleModel())
             ->add("page", new Page())
             ->json();
-    }
 
+        // todo syntax:
+        /*
+            view(new SimpleModel())
+            ->filter("test*")
+            ->merge(json_property)
+            ->to(json_property)
+            // output would be automatic
+        */
+
+    }
 }
+
+// need to add bindings between class methods and api
