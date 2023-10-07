@@ -6,4 +6,9 @@ namespace MeshMVC;
 	class Cross {
 	    public static $currentController = null;
 	    public static $currentView = null;
+        public static $models = null;
+
+        public function __construct() {
+            self::$models = new \MeshMVC\Models();
+        }
     }

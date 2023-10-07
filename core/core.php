@@ -25,9 +25,9 @@
 	
 	// MVC
 	require_once PATH."core/classes/core-db.php";
-	require_once PATH."core/classes/core-cross.php";
 	require_once PATH."core/classes/core-model.php";
 	require_once PATH."core/classes/core-models.php";
+	require_once PATH."core/classes/core-cross.php"; @new \MeshMvc\Cross();
 	require_once PATH."core/classes/core-view.php";
 	require_once PATH."core/classes/core-controller.php";
 	require_once PATH."core/classes/core-shortcuts.php";

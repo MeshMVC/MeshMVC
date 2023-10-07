@@ -63,7 +63,7 @@
             if ($from == "") throw new \Exception("No view template specified!");
 
             // TODO: add options to download via FTP, S3, etc
-            // view is string or file
+            // view is string or file or URL
             if (substr($from, 0, 7)=='http://' || substr($from, 0, 8)=='https://') {
 
                 // fetch url content into output
@@ -196,7 +196,7 @@
                         if ($ext === "css") {
                             $append_header = '<link href="' . $resource . '" rel="stylesheet" />';
                         } elseif ($ext === "js") {
-                            $append_header = '<script src="' . $resource . '"></script>';
+                            $append_header = '<script src="' . $resource . '" type="text/javascript"></script>';
                         }
 
                         $doc["html head"]->append($append_header);
@@ -305,8 +305,10 @@
                         $controller->run();
                         // or render each views
                         foreach ($controller->loaded_views as $view) {
-                            if ($view->doRenderOnDestruct) {
-                                self::$complete_output = Queue::parse($view->from, self::$complete_output, $view->filter, $view->to, $view->display_type, $view->display_mode, $view->use_models, 0);
+                            if ($view->display_type == "html") {
+                                if ($view->doRenderOnDestruct) {
+                                    self::$complete_output = Queue::parse($view->from, self::$complete_output, $view->filter, $view->to, $view->display_type, $view->display_mode, $view->use_models, 0);
+                                }
                             }
                         }
                     }

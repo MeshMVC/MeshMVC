@@ -52,7 +52,7 @@
 		}
 
 		// add new model by default
-		@\MeshMVC\Models::add($name, $instance);
+		@\MeshMVC\Cross::$models->add($name, $instance);
 	}
 
 	// Model Group obj

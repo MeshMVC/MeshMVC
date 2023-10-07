@@ -30,8 +30,8 @@
 
         // REQUIRED: directories search patterns (can be modified)
         public static $SEEDS = array(
-            // libraries search pattern
-            "lib:webapp/packages/plugins/*.php",
+            // plugins search pattern
+            "plugin:webapp/packages/plugins/*.php",
             // views search pattern
             "view:webapp/*.*",
             // controllers search pattern

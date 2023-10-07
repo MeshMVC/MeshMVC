@@ -5,7 +5,7 @@
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
     function sign() {
-        return route("/*");
+        return route("/html/*");
     }
     function run() {
         view("html.html");
@@ -22,7 +22,7 @@ class Page extends \MeshMVC\Model {
 // (multiple controllers can fire for the same page/route/api)
 class _page_components extends \MeshMVC\Controller {
     function sign() {
-        return route("/*") && needs("_html");
+        return route("/html/*") && needs("_html");
     }
     function run() {
         model("page", new Page());
@@ -36,7 +36,7 @@ class _page_components extends \MeshMVC\Controller {
 class _home extends \MeshMVC\Controller {
 
     function sign() {
-        return route("/home") && needs("_page_components"); // _html controller class dependency
+        return route("/html/home") && needs("_page_components"); // _html controller class dependency
     }
     function run() {
         view("home.html")
@@ -47,11 +47,39 @@ class _home extends \MeshMVC\Controller {
 class _resume extends \MeshMVC\Controller {
 
     function sign() {
-        return route("/resume") && needs("_page_components"); // _html controller class dependency
+        return route("/html/resume") && needs("_page_components"); // _html controller class dependency
     }
     function run() {
-        $output = nl2br(view("https://luclaverdure.com/wp-content/uploads/CV-Luc-Laverdure-EN.txt")->toString());
-        view($output)
+        view("https://luclaverdure.com")
+            ->filter("#history p:eq(0)")
             ->to("html body"); // appends page contents to document body
     }
+
+}
+
+class SimpleModel extends \MeshMVC\Model {
+    public $test1 = "value1";
+    public $tes2 = 2;
+
+    public function test3() {
+        return "executed function";
+    }
+
+    public function test4() {
+        return 1 + 3;
+    }
+
+}
+
+class _models_test extends \MeshMVC\Controller {
+
+    function sign() {
+        return route("/myapi/test"); // _html controller class dependency
+    }
+    function run() {
+        echo models()
+            ->add("test", new SimpleModel())
+            ->json();
+    }
+
 }

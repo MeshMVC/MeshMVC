@@ -5,24 +5,27 @@ namespace MeshMVC;
 	// chainable class
 	class Models {
 
-        public static $models = Array();
+        public static $models = [];
 
-		public function __construct($name, $value = null) {
-		    if ($value == null) {
-		        return self::$models[$name];
-		    } else {
-                self::$models[$name] = $value;
-		    }
+		public function __construct($name=null, $value = null) {
+            if ($name != null) {
+                if ($value == null) {
+                    return self::$models[$name];
+                } else {
+                    self::$models[$name] = $value;
+                }
+            }
             return $this;
 		}
 
-        public static function add($name, $value) {
+        public function add($name, $value) {
             self::$models[$name] = $value;
+            return $this;
         }
 
         public function remove($name) {
             unset(self::$models[$name]);
-			return $this;
+            return $this;
         }
 
         public static function getAll() {
@@ -33,4 +36,12 @@ namespace MeshMVC;
             return self::$models[$name];
         }
 
-	}
+        public static function json($withfunctions = true) {
+            $data = [];
+            foreach (self::$models as $name => $instance) {
+                $data[] = json_decode($instance->json($withfunctions));
+            }
+            return json_encode($data);
+        }
+
+    }
