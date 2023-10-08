@@ -6,6 +6,7 @@ namespace MeshMVC;
 	class View {
 		public $from = ''; 	// from template
         public $filter = '';
+        public $trim = '';
         public $to = ''; 	// to selector -> default override all previous templates
         public $cache = false; // caching
 
@@ -14,19 +15,24 @@ namespace MeshMVC;
 
         public $use_models = true; // default: true (render models within brackets ex: "[user.email]")
         public $doRenderOnDestruct = true;
-		private static $counted = 0;
 
         // constructor requires filename of view
         public function __construct($from) {
             \MeshMVC\Cross::$currentView = $this;
+
+            if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
+                $this->display_type = "json";
+            }
 			$this->from = $from;
+
 			return $this;
         }
 
-        private function parseOutput($currentOutput) {
+        public function parseOutput($currentOutput) {
             \MeshMVC\Cross::$currentView = $this;
             //TODO: if cached with cache_key: output cache data
-            return \MeshMVC\Queue::parse($this->from, $currentOutput, $this->filter, $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
+
+            return \MeshMVC\Queue::parse($this->from, $currentOutput, $this->filter, $this->trim,  $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
         }
 
         //return as string
@@ -36,58 +42,62 @@ namespace MeshMVC;
             return $this->parseOutput("");
         }
 
-        // process render without output
-		public function render() {
-            \MeshMVC\Cross::$currentView = $this;
-            \MeshMVC\Queue::$complete_output = $this->parseOutput(\MeshMVC\Queue::$complete_output);
-			return true;
-		}
-
 		// set caching
 		public function cache($setCaching) {
             \MeshMVC\Cross::$currentView = $this;
             $this->cache = $setCaching;
+            return $this;
 		}
 
 		// send view as email
-		public function email($filename) {
+        // TODO: send email
+		public function email($subject, $email) {
             \MeshMVC\Cross::$currentView = $this;
-            // send email
+            return $this;
 		}
 
 		// write to file
-		public function export($filename) {
+        // TODO: write with passed storage object instead, ex: SFTP, DB, S3, Session
+		public function save($filename) {
             \MeshMVC\Cross::$currentView = $this;
-			//$this->render();
-			//@file_put_contents($filename, $file_contents);
+			file_put_contents($filename, $this->parseOutput(""));
+            return $this;
 		}
 
 		// from template filename
 		public function from($from) {
             \MeshMVC\Cross::$currentView = $this;
-            self::$counted++;
 			$this->from = $from;
 			return $this;
 		}
+
 		// filter applied on from
 		public function filter($filter) {
             \MeshMVC\Cross::$currentView = $this;
 			$this->filter = $filter;
 			return $this;
 		}
+
+        public function trim($filter) {
+            \MeshMVC\Cross::$currentView = $this;
+            $this->trim = $filter;
+            return $this;
+        }
+
 		// "to" selector
  		public function to($to) {
             \MeshMVC\Cross::$currentView = $this;
 			$this->to = $to;
 			return $this;
 		}
-		// html or text or json
+		// force display type (html or json) / this is usually done automatically by analysing the ->from property
 		public function display_type($display_type) {
             \MeshMVC\Cross::$currentView = $this;
 			$this->display_type = $display_type;
 			return $this;
 		}
-		//  inner, prepend, append, replace
+		// HTML: inner, prepend, replace, append (default)
+        // JSON: prepend, append, replace, merge (default)
 		public function by($display_mode) {
             \MeshMVC\Cross::$currentView = $this;
 			$this->display_mode = $display_mode;

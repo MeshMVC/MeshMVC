@@ -2,20 +2,24 @@
 
 namespace MeshMVC;
 
-	class Tools {
+	class Tools
+    {
 
-		public static function version() {
-			return file_get_contents("/build.version");
-		}
+        public static function version()
+        {
+            return file_get_contents("/build.version");
+        }
 
-		// test if current user has access level
-		public static function access($access_level) {
-			// TODO
-			$user = new \MeshMVC\User();
-			return $user->access($access_level);
-		}
+        // test if current user has access level
+        public static function access($access_level)
+        {
+            // TODO
+            $user = new \MeshMVC\User();
+            return $user->access($access_level);
+        }
 
-        public static function download($url, $proxy = null) {
+        public static function download($url, $proxy = null)
+        {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_PROXY, $proxy);
@@ -39,17 +43,18 @@ namespace MeshMVC;
 
             // get response code to ensure
             if (\MeshMVC\Environment::DEFAULT_PROXY_VALIDATE_RESPONSE_CODES) {
-                $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-                if ($code != 200) throw new \Exception($code." error downloading: ".$url);
+                $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+                if ($code != 200) throw new \Exception($code . " error downloading: " . $url);
             }
 
             curl_close($ch);
             return $output;
         }
 
-		// q(number) = query argument (starts with 0)
-		// q(string) = test if current url matches string 
-		public static function queryURL($arg_number='all', $controller=null, $dependencies=[]) {
+        // q(number) = query argument (starts with 0)
+        // q(string) = test if current url matches string
+        public static function queryURL($arg_number = 'all', $controller = null, $dependencies = [])
+        {
             if ($arg_number === 'all') {
                 return $_GET['q'] ?? '/';
             } elseif (is_numeric($arg_number)) {
@@ -60,18 +65,20 @@ namespace MeshMVC;
             }
 
             return self::inpath($arg_number);
-		}
+        }
 
-		
-		// q(string) = test if current url matches string 
-		private static function inpath($url) {
-			$q = $_GET['q'] ?? "";
-			return fnmatch($url, "/" . $q);
-		}
 
-		// controller dependency manager, returns empty array when no children are found
-		// $this_controller_name, Array(), $this->obj_controllers, $invalid_controllers
-		public static function dig_dependencies($dep, $trail, &$objs,  &$invalid_controllers) {
+        // q(string) = test if current url matches string
+        private static function inpath($url)
+        {
+            $q = $_GET['q'] ?? "";
+            return fnmatch($url, "/" . $q);
+        }
+
+        // controller dependency manager, returns empty array when no children are found
+        // $this_controller_name, Array(), $this->obj_controllers, $invalid_controllers
+        public static function dig_dependencies($dep, $trail, &$objs, &$invalid_controllers)
+        {
 
             // Add trail
             $trail[] = $dep;
@@ -102,34 +109,39 @@ namespace MeshMVC;
             }
 
             return [];
-		}
+        }
 
 
-		// custom sort
-		public static function prioritySorter($a, $b) {
-			return $a <=> $b;
-		}
+        // custom sort
+        public static function prioritySorter($a, $b)
+        {
+            return $a <=> $b;
+        }
 
 
-		public static function Posted($var) {
-			return $_POST[$var] ?? "";
-		}
+        public static function Posted($var)
+        {
+            return $_POST[$var] ?? "";
+        }
 
-		public static function Got($var) {
-			return isset($_POST[$var]);
-		}
+        public static function Got($var)
+        {
+            return isset($_POST[$var]);
+        }
 
-		// write to logs
-		public static function note($data) {
+        // write to logs
+        public static function note($data)
+        {
             $log_file = \MeshMVC\Environment::LOG_FILE;
             if ($fh = fopen($log_file, 'a')) {
                 fwrite($fh, $data . PHP_EOL);
                 fclose($fh);
             }
-		}
+        }
 
-		// validate email
-        public static function validate_email($email) {
+        // validate email
+        public static function validate_email($email)
+        {
             $isValid = true;
             $atIndex = strrpos($email, "@");
 
@@ -158,19 +170,21 @@ namespace MeshMVC;
             }
 
             return true;
-		}
+        }
 
-		// redirect user to new location
-		public static function redirect($url) {
-			header("Location: ". $url);
-			die();
-		}
+        // redirect user to new location
+        public static function redirect($url)
+        {
+            header("Location: " . $url);
+            die();
+        }
 
-		// translate text
-		public static function translate($text = "") {
-			// on empty string, return current language code
-			return $text;
-		}
+        // translate text
+        public static function translate($text = "")
+        {
+            // on empty string, return current language code
+            return $text;
+        }
 
         public static function email($to, $subject, $message)
         {
@@ -178,7 +192,7 @@ namespace MeshMVC;
 
             $headers = array(
                 "From" => $from,
-                "Message-ID" => "<" . time() . "." . uniqid() . "@". $_SERVER['SERVER_NAME'] . ">",
+                "Message-ID" => "<" . time() . "." . uniqid() . "@" . $_SERVER['SERVER_NAME'] . ">",
                 "X-Mailer" => "PHP v" . phpversion(),
                 "MIME-Version" => "1.0",
                 "Content-Type" => "text/html; charset=UTF-8",
@@ -205,7 +219,8 @@ namespace MeshMVC;
             return true;
         }
 
-        public static function endsWith($haystack, $needle) {
+        public static function endsWith($haystack, $needle)
+        {
             $length = strlen($needle);
             if ($length === 0) {
                 return true;
@@ -214,7 +229,8 @@ namespace MeshMVC;
             return substr($haystack, -$length) === $needle;
         }
 
-        public static function search_files($pattern, $flags = 0) {
+        public static function search_files($pattern, $flags = 0)
+        {
             $files = glob($pattern, $flags);
 
             foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
@@ -224,7 +240,8 @@ namespace MeshMVC;
             return $files;
         }
 
-        private static function search_files_matching_helper($filename, $dir, &$results = []) {
+        private static function search_files_matching_helper($filename, $dir, &$results = [])
+        {
             $files = glob($dir);
 
             foreach ($files as $current_file) {
@@ -243,31 +260,95 @@ namespace MeshMVC;
             return $results;
         }
 
-		public static function search_files_matching($filename, $dir){
-			$results = self::search_files_matching_helper($filename, $dir);
-			return $results;
-		}
-		
-		public static function mvc_input($input_type, $var, $val) {
-			switch ($input_type) {
-				case "radio":
-					return '<input type="radio" name="'.$var.'" value="'.$val.'" />';
-					break;
-				case "textarea":
-					return '<textarea name="'.$var.'">'.$val.'</textarea>';
-					break;
-				case "checkbox":
-					return '<input type="checkbox" name="'.$var.'" value="'.$val.'" />';
-					break;
-				case "password":
-					// passwords values aren't returned for security reasons
-					return '<input type="password" name="'.$var.'" />';
-					break;
-				default:
-					return '<input type="textbox" name="'.$var.'" value="'.$val.'" />';
-					// textbox
-			}
-		}
-			
-	}
+        public static function search_files_matching($filename, $dir)
+        {
+            $results = self::search_files_matching_helper($filename, $dir);
+            return $results;
+        }
+
+        public static function mvc_input($input_type, $var, $val)
+        {
+            switch ($input_type) {
+                case "radio":
+                    return '<input type="radio" name="' . $var . '" value="' . $val . '" />';
+                    break;
+                case "textarea":
+                    return '<textarea name="' . $var . '">' . $val . '</textarea>';
+                    break;
+                case "checkbox":
+                    return '<input type="checkbox" name="' . $var . '" value="' . $val . '" />';
+                    break;
+                case "password":
+                    // passwords values aren't returned for security reasons
+                    return '<input type="password" name="' . $var . '" />';
+                    break;
+                default:
+                    return '<input type="textbox" name="' . $var . '" value="' . $val . '" />';
+                // textbox
+            }
+        }
+
+        public static function jsonDecode($json) {
+            if (empty($json)) throw new \Exception("Empty json!");
+            return json_decode($json, true);
+        }
+
+        public static function jsonEncode($json) {
+            if (empty($json)) throw new \Exception("Empty json!");
+            return json_encode($json, JSON_PRETTY_PRINT);
+        }
+
+        // toolkit for manipulating json // $to, $filter, json, string
+        //$json receive as json string (not object)
+        public static function jsonSelector($json, $selector = "", $value = null, $trim_selector = ",") {
+            $data = \MeshMVC\Tools::jsonDecode($json);
+
+            if ($data === null) {
+                // JSON decoding failed
+                throw new \Exception("JSON decoding failed.");
+            }
+
+            $keys = self::array_keys_recursive($data);
+            $matches = [];
+
+            foreach ($keys as $key) {
+                $pattern = '/' . str_replace('*', '.*', preg_quote($selector, '/')) . '/';
+                $match = preg_match($pattern, $key);
+
+                if ($selector !== "" && $match) {
+                    if ($value !== null) {
+                        $data[$key] = $value;
+                    } else {
+                        unset($data[$key]);
+                    }
+                } elseif ($trim_selector !== "" && $key !== $trim_selector) {
+                    if ($match) {
+                        if ($value !== null) {
+                            $data[$key] = $value;
+                        } else {
+                            unset($data[$key]);
+                        }
+                    }
+                }
+
+                if ($match) {
+                    $matches[] = $data[$key];
+                }
+            }
+
+            //$json return as json string (not object)
+            return \MeshMVC\Tools::jsonEncode($matches);
+        }
+
+        public static function array_keys_recursive($array) {
+            $keys = [];
+            foreach ($array as $key => $value) {
+                $keys[] = $key;
+                if (is_array($value)) {
+                    $keys = array_merge($keys, self::array_keys_recursive($value));
+                }
+            }
+            return $keys;
+        }
+    }
 ?>

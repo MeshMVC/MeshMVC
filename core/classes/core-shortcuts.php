@@ -22,6 +22,16 @@
 	function q($argNumber_or_inPathString) {
 		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
 	}
+
+/**
+ * Determines if current request is within a url
+ * @link https://meshmvc.com/????
+ * @param mixed $url <p>
+ * The searched value.
+ * </p>
+ * @return bool true if within route
+ * false otherwise.
+ */
 	function route($url) {
 		return \MeshMVC\Tools::queryURL($url);
 	}

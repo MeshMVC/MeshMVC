@@ -47,7 +47,8 @@
             }
         }
 
-        public static function parse($from="", $function_output="", $filter="", $to="", $display_type="html", $display_mode="append", $use_models=true, $recursion_level=0) {
+        public static function parse($from="", $function_output="", $filter="", $trim="", $to="", $display_type="html", $display_mode="append", $use_models=true, $recursion_level=0)
+        {
 
             if ($recursion_level > 999999)
                 throw new \Exception("Template surpasses maximum recursion level. (Prevented infinite loop from crashing server)");
@@ -64,7 +65,7 @@
 
             // TODO: add options to download via FTP, S3, etc
             // view is string or file or URL
-            if (substr($from, 0, 7)=='http://' || substr($from, 0, 8)=='https://') {
+            if ( ($display_type !="json") && (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://')) {
 
                 // fetch url content into output
                 try {
@@ -77,10 +78,10 @@
                     $processed_output = $fetch;
                 } else {
                     // couldn't fetch url
-                    throw new \Exception("Couldn't fetch URL: ".$from);
+                    throw new \Exception("Couldn't fetch URL: " . $from);
                 }
 
-            } else {
+            } elseif ($display_type !="json") {
 
                 // find all views
                 $paths_to_load = [];
@@ -121,53 +122,100 @@
                 }
             }
 
-            if ($use_models && count($model) > 0) {
-                ob_start();
-                eval("?>" . $processed_output . "<?php");
-                $processed_output = ob_get_clean();
-
-                if (\MeshMVC\Environment::DEBUG) {
-                    foreach (self::$resources as $this_resource) {
-                        $this_resource_filename = $this_resource["file"];
-                        $this_resource_region = $this_resource["region"];
-                    }
+            if ($display_type == "html") {
+                if ($use_models && count($model) > 0) {
+                    ob_start();
+                    eval("?>" . $processed_output . "<?php");
+                    $processed_output = ob_get_clean();
                 }
+
+                $place_me = null;
+                if ($processed_output !== "" && ($filter !== "" || $trim !== "")) {
+                    // filter if needed
+                    if ($filter) {
+                        $place_me = \phpQuery::newDocumentHTML($processed_output)[$filter];
+                    } else {
+                        $place_me = \phpQuery::newDocumentHTML($processed_output);
+                    }
+
+                    // trim if needed
+                    if ($trim) $place_me = $place_me->find($trim)->remove();
+
+                    $place_me = $place_me->html();
+                } else {
+                    $place_me = $processed_output;
+                }
+
+                if ($to == "") {
+                    // override all previous templates if no target specified
+                    return $place_me;
+                }
+
+                //  get outerHTML
+                $destination = \phpQuery::newDocumentHTML($function_output);
+                $content = $place_me;
+
+                switch ($display_mode) {
+                    case "prepend":
+                        $destination[$to]->prepend($content);
+                        break;
+                    case "append":
+                        $destination[$to]->append($content);
+                        break;
+                    case "replace":
+                        $destination[$to]->replaceWith($content);
+                        break;
+                    case "inner":
+                        $destination[$to]->html($content);
+                        break;
+                    default:
+                        $destination[$to]->append($content);
+                }
+
+                // using wrapper hack to get outerHTML
+                return $destination;
+
+            } elseif ($display_type == "json") {
+                // get from as json
+                $place_me = null;
+                if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
+                    if ($to == "") {
+                        // override all previous templates if no target specified
+                        $to = $from->json();
+                    }
+                } else {
+                    var_dump($to);
+                    die();
+                }
+
+                $destination = \MeshMVC\Tools::jsonSelector($to, $filter, $from->json(), $trim);
+echo $destination;
+die();
+                return json_encode($destination);
+
+                /*
+                $place_me = json_decode($place_me, true);
+                switch ($display_mode) {
+                    case "prepend":
+                        $destination = array_merge(json_decode(\MeshMVC\Tools::jsonSelector($to, $place_me, true), true), $to);
+                        break;
+                    case "append":
+                        $destination = array_merge($to, json_decode(\MeshMVC\Tools::jsonSelector($to, $place_me, true), true));
+                        break;
+                    case "replace":
+                        $destination = $place_me;
+                        break;
+                    default: // "merge"
+                        $destination = array_merge($to, json_decode(\MeshMVC\Tools::jsonSelector($to, $place_me, true), true));
+                }
+                */
+
+                // using wrapper hack to get outerHTML
+            } elseif ($display_type == "text") {
+                return $processed_output;
             }
 
-            if ($processed_output !== "" && $filter !== "") {
-                $place_me = \phpQuery::newDocumentHTML($processed_output)[$filter]->html();
-            } else {
-                $place_me = $processed_output;
-            }
-
-            if ($to == "") {
-                // override all previous templates if no target specified
-                return $place_me;
-            }
-
-            //  get outerHTML
-            $destination = \phpQuery::newDocumentHTML($function_output);
-            $content = ($display_type === "html") ? $place_me : htmlentities($place_me);
-
-            switch ($display_mode) {
-                case "prepend":
-                    $destination[$to]->prepend($content);
-                    break;
-                case "append":
-                    $destination[$to]->append($content);
-                    break;
-                case "replace":
-                    $destination[$to]->replaceWith($content);
-                    break;
-                case "inner":
-                    $destination[$to]->html($content);
-                    break;
-                default:
-                    $destination[$to]->append($content);
-            }
-
-            // using wrapper hack to get outerHTML
-            return $destination;
+            return new \Exception("Unknown display type (".$display_type.") for view.");
         }
 
         public static function output()
@@ -307,7 +355,11 @@
                         foreach ($controller->loaded_views as $view) {
                             if ($view->display_type == "html") {
                                 if ($view->doRenderOnDestruct) {
-                                    self::$complete_output = Queue::parse($view->from, self::$complete_output, $view->filter, $view->to, $view->display_type, $view->display_mode, $view->use_models, 0);
+                                    self::$complete_output = $view->parseOutput(self::$complete_output);
+                                }
+                            } else {
+                                if ($view->doRenderOnDestruct) {
+                                    self::$complete_output = $view->parseOutput(self::$complete_output);
                                 }
                             }
                         }

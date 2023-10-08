@@ -2,7 +2,10 @@
 
 namespace MeshMVC;
 
-	// Core Controller class for all controller objects to extend
+    /**
+     * Core Controller class for all controller objects to extend
+     * @link https://meshmvc.com/????
+     */
 	class Controller {
 
 		// unit tests results
