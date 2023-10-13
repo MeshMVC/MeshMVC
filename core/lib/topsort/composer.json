@@ -1,5 +1,0 @@
-{
-    "require": {
-        "marcj/topsort": "^2.0"
-    }
-}
