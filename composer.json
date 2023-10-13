@@ -3,6 +3,8 @@
 
   "require": {
     "marcj/topsort": "^2.0",
+    "softcreatr/jsonpath": "^0.8",
+
     "aws/aws-sdk-php": "^3.0",
 
     "league/oauth2-facebook": "^2.0",
