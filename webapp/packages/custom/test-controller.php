@@ -78,8 +78,7 @@ class _models_test extends \MeshMVC\Controller {
     }
 
     function run() {
-        // $myModel = new SimpleModel();
-        // $json = $myModel->json();
+        /*
         $json = '{ "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }';
         echo "<h4>1:</h4>";
         echo \MeshMVC\Tools::jsonSelector($json); // should output  { "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }
@@ -106,22 +105,23 @@ class _models_test extends \MeshMVC\Controller {
         // patterns example:
         $json = '[{"zzz": {"x": "Y"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"}}, {"q": 22}]';
         echo "<h4>10:</h4>";
+        // PATTERN MATCHING NOT WORKING!
+        // use jsonpath: softcreatr/jsonpath
         echo \MeshMVC\Tools::jsonSelector($json, "0.z*"); // should output: {"zzz": {"x": "Y"}}
 
-        // PATTERN MATCHING NOT WORKING!
-
         die();
+        */
 
-        /*
-        ->filter("*test*") // filter properties and methods for selected
+        view(new SimpleModel())
+        ->filter("test1") // filter properties and methods for selected
         ->trim("test3"); // filter to remove properties and methods for selected
         //->to("test[0].property1");
         // output would be automatic
         //->by("append"); // default merge
 
+        /*
         view(new Page())
-            ->filter("*") // filter properties and methods for selected
-            ->trim("user_id*") // filter to remove properties and methods for selected
+            ->trim("user_id") // filter to remove properties and methods for selected
             ->to("test1");
         */
     }

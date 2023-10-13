@@ -178,37 +178,48 @@
             } elseif ($display_type == "json") {
                 // get from as json
                 $place_me = null;
+                $filtered = null;
                 if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
                     if ($to == "") {
                         // override all previous templates if no target specified
                         $to = $from->json();
+                        $from = "";
+                    } else {
+                        $from = $from->json();
+                        $filter = $to;
+                        $to = $function_output;
                     }
-                } else {
-                    var_dump($to);
-                    die();
                 }
 
-                $destination = \MeshMVC\Tools::jsonSelector($to, $filter, $from->json(), $trim);
-echo $destination;
-die();
-                return json_encode($destination);
+                if (empty($filter)) {
+                    $filter = "*";
+                }
 
-                /*
-                $place_me = json_decode($place_me, true);
+                if (empty($from)) {
+                    $from = null;
+                }
+
+                /* use
                 switch ($display_mode) {
                     case "prepend":
-                        $destination = array_merge(json_decode(\MeshMVC\Tools::jsonSelector($to, $place_me, true), true), $to);
+                        $destination[$to]->prepend($content);
                         break;
                     case "append":
-                        $destination = array_merge($to, json_decode(\MeshMVC\Tools::jsonSelector($to, $place_me, true), true));
+                        $destination[$to]->append($content);
                         break;
                     case "replace":
-                        $destination = $place_me;
+                        $destination[$to]->replaceWith($content);
                         break;
-                    default: // "merge"
-                        $destination = array_merge($to, json_decode(\MeshMVC\Tools::jsonSelector($to, $place_me, true), true));
+                    case "inner":
+                        $destination[$to]->html($content);
+                        break;
+                    default:
+                        $destination[$to]->append($content);
                 }
                 */
+
+                $destination = \MeshMVC\Tools::jsonSelector($to, $filter, $from, $trim);
+                return $destination;
 
                 // using wrapper hack to get outerHTML
             } elseif ($display_type == "text") {
