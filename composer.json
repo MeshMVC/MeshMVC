@@ -2,19 +2,19 @@
   "name": "meshmvc/meshmvc",
 
   "require": {
-    "marcj/topsort": "*",
-    "awk/sdk": "*",
+    "marcj/topsort": "^2.0",
+    "aws/aws-sdk-php": "^3.0",
 
     "league/oauth2-facebook": "^2.0",
-    "league/oauth2-github": "*",
-    "league/oauth2-google": "*",
-    "league/oauth2-instagram": "*",
-    "league/oauth2-linkedin": "*",
+    "league/oauth2-github": "^3.0",
+    "league/oauth2-google": "^4.0",
+    "league/oauth2-instagram": "^3.0",
+    "league/oauth2-linkedin": "^5.0",
     "league/flysystem": "^3.0"
 
 
   },
   "config": {
-    "vendor-dir": "./core/lib"
+    "vendor-dir": "./www/core/lib"
   }
 }

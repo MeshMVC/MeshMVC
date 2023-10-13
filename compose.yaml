@@ -9,7 +9,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./:/var/www/html
+      - ./www/:/var/www/html
     extra_hosts:
       - host.docker.internal:host-gateway
     <<: *network
