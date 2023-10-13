@@ -76,9 +76,43 @@ class _models_test extends \MeshMVC\Controller {
     function sign() {
         return route("/api/test"); // _html controller class dependency
     }
-    function run() {
 
-        view(new SimpleModel())
+    function run() {
+        // $myModel = new SimpleModel();
+        // $json = $myModel->json();
+        $json = '{ "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }';
+        echo "<h4>1:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json); // should output  { "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }
+        echo "<h4>2:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "zzz"); // should output  {zzz: "zzz"}
+        echo "<h4>3:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "zzz", "XXX"); // should output  {zzz: "XXX"}
+        echo "<h4>4:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "*", null, "test1"); // should output  { "zzz": "zzz", "test2": 2, "test3": "executed function", "test4": 4 }
+        echo "<h4>5:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "*", "XXX", "test1"); // should output  { "zzz": "XXX", "test2": "XXX", "test3": "XXX", "test4": "XXX" }
+        $json = '{ "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }';
+        echo "<h4>6:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "*", '{"x": "Y"}', "test1"); // should output { "zzz": {"x": "Y"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"} }
+        $json = '{ "zzz": {"x": "Y"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"} }';
+        echo "<h4>7:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "zzz.x"); // should output {x: "Y"}
+        $json = '[{"zzz": {"x": "Y"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"}}, {"q": 22}]';
+        echo "<h4>8:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "1.q"); // should output  {q: 22}
+        echo "<h4>9:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "0.zzz"); // should output  {x: "Y"}
+
+        // patterns example:
+        $json = '[{"zzz": {"x": "Y"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"}}, {"q": 22}]';
+        echo "<h4>10:</h4>";
+        echo \MeshMVC\Tools::jsonSelector($json, "0.z*"); // should output: {"zzz": {"x": "Y"}}
+
+        // PATTERN MATCHING NOT WORKING!
+
+        die();
+
+        /*
         ->filter("*test*") // filter properties and methods for selected
         ->trim("test3"); // filter to remove properties and methods for selected
         //->to("test[0].property1");
@@ -89,7 +123,6 @@ class _models_test extends \MeshMVC\Controller {
             ->filter("*") // filter properties and methods for selected
             ->trim("user_id*") // filter to remove properties and methods for selected
             ->to("test1");
+        */
     }
 }
-
-// need to add bindings between class methods and api

@@ -300,55 +300,75 @@ namespace MeshMVC;
 
         // toolkit for manipulating json // $to, $filter, json, string
         //$json receive as json string (not object)
-        public static function jsonSelector($json, $selector = "", $value = null, $trim_selector = ",") {
-            $data = \MeshMVC\Tools::jsonDecode($json);
-
-            if ($data === null) {
-                // JSON decoding failed
-                throw new \Exception("JSON decoding failed.");
+        /**
+         * JSON manipulation
+         * @link https://meshmvc.com/????
+         * @param string $json <p>
+         * JSON string (not decoded object)
+         * </p>
+         * @param string $selector <p>
+         * JSON returned will only contain items within this selector
+         * </p>
+         * @param string $value [optional]<p>
+         * When set, value will be applied to all items of selector, input is JSON string, not objects
+         * </p>
+         * @param string $trim_selector [optional]<p>
+         * When set, remove items matching trim_selector
+         * </p>
+         * @return string returns JSON string (encoded)
+         * @throws \Exception when decoding fails
+         */
+        public static function jsonSelector(?string $json, string $selector = "*", $value = null, string $trim_selector = "") : string
+        {
+            // Parse the JSON
+            $jsonArray = json_decode($json, true);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                throw new \Exception('Invalid input JSON');
             }
 
-            $keys = self::array_keys_recursive($data);
-            $matches = [];
+            // If $value is a string, try to decode it into an array
+            if (is_string($value)) {
+                $parsedValue = json_decode($value, true);
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    // If $value is a valid JSON string, use the parsed array
+                    $value = $parsedValue;
+                }
+            }
 
-            foreach ($keys as $key) {
-                $pattern = '/' . str_replace('*', '.*', preg_quote($selector, '/')) . '/';
-                $match = preg_match($pattern, $key);
+            // Handle the trim_selector option
+            if ($trim_selector && isset($jsonArray[$trim_selector])) {
+                unset($jsonArray[$trim_selector]);
+            }
 
-                if ($selector !== "" && $match) {
-                    if ($value !== null) {
-                        $data[$key] = $value;
-                    } else {
-                        unset($data[$key]);
+            // Handle the selector option
+            if ($selector !== "*") {
+                $selectorParts = explode('.', $selector);
+                $temp = &$jsonArray;
+                foreach ($selectorParts as $part) {
+                    if (!array_key_exists($part, $temp)) {
+                        return '{}'; // Return empty object if the selector does not exist
                     }
-                } elseif ($trim_selector !== "" && $key !== $trim_selector) {
-                    if ($match) {
-                        if ($value !== null) {
-                            $data[$key] = $value;
-                        } else {
-                            unset($data[$key]);
-                        }
+                    $temp = &$temp[$part];
+                }
+
+                // If $value is set, update the value of the selected key
+                if ($value !== null) {
+                    $temp = $value;
+                }
+
+                // Wrap result in an array if the selector is not a wildcard
+                return json_encode([$part => $temp], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            } else {
+                // If selector is "*", replace all values or set to $value
+                if ($value !== null) {
+                    $newArray = [];
+                    foreach ($jsonArray as $key => $item) {
+                        $newArray[$key] = $value;
                     }
-                }
-
-                if ($match) {
-                    $matches[] = $data[$key];
+                    $jsonArray = $newArray;
                 }
             }
 
-            //$json return as json string (not object)
-            return \MeshMVC\Tools::jsonEncode($matches);
-        }
-
-        public static function array_keys_recursive($array) {
-            $keys = [];
-            foreach ($array as $key => $value) {
-                $keys[] = $key;
-                if (is_array($value)) {
-                    $keys = array_merge($keys, self::array_keys_recursive($value));
-                }
-            }
-            return $keys;
+            return json_encode($jsonArray, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
     }
-?>

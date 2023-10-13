@@ -23,15 +23,15 @@
 		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
 	}
 
-/**
- * Determines if current request is within a url
- * @link https://meshmvc.com/????
- * @param mixed $url <p>
- * The searched value.
- * </p>
- * @return bool true if within route
- * false otherwise.
- */
+	/**
+	 * Determines if current request is within a url
+	 * @link https://meshmvc.com/????
+	 * @param mixed $url <p>
+	 * The searched url pattern.
+	 * </p>
+	 * @return bool true if within route
+	 * false otherwise.
+	 */
 	function route($url) {
 		return \MeshMVC\Tools::queryURL($url);
 	}
@@ -41,19 +41,50 @@
 		return \MeshMVC\Tools::translate($translate_string_id);
 	}
 
-	// View obj
-	function view($filename) {
-		\MeshMVC\Cross::$currentController->addView(new \MeshMVC\View($filename));
+	/**
+	 * Creates a view
+	 * @link https://meshmvc.com/????
+	 * @param mixed $object <p>
+	 * Filename, basename or url of template to be fetched, OR Model instance for APIs.
+	 * </p>
+	 * @return \MeshMVC\View returns current View (Chainable with Fluent Interface)
+	 */
+	function view($object) {
+		\MeshMVC\Cross::$currentController->addView(new \MeshMVC\View($object));
 		return \MeshMVC\Cross::$currentView;
 	}
 
+	/**
+	 * Attaches one or more controllers to be loaded before this one as a dependency
+	 * @link https://meshmvc.com/????
+	 * @param mixed $controller_list <p>
+	 * The controller name(s)
+	 * </p>
+	 * <p>
+	 * If controller_list is a string, a single controller is added as a dependency..
+	 * </p>
+	 * <p>
+	 *  If controller_list is an array of strings, each controller is added as a dependency..
+	 *  </p>         *
+	 * @return \MeshMVC\Controller returns current controller (Chainable with Fluent Interface)
+	 */
 	function needs($controllers) {
 	    $current_this = \MeshMVC\Cross::$currentController;
 		@$current_this->needs($controllers);
 		return $current_this;
 	}
 
-	// Model obj
+	/**
+	 * Adds a model to the queue or fetch a model (when no value is set)
+	 * @link https://meshmvc.com/????
+	 * @param mixed $name <p>
+	 * Name of object for internal and external reference.
+	 * </p>
+	 * @param mixed $instance <p>
+	 *  Set Model instanced value object for internal and external reference.
+	 *  </p>
+	 * 	@return \MeshMVC\Model returns current Model
+	 */
 	function model($name, $instance = null) {
 		// when no instance defined
 		if ($instance == null) {

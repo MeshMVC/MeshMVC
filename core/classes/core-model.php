@@ -7,8 +7,6 @@ namespace MeshMVC;
 
         public static $class_methods = []; // protected methods not to output
         public static $class_properties = []; // protected methods not to output
-        private $filter = "";
-        private $trim = "";
         private $computed = true;
 
         public function __construct() {
@@ -49,16 +47,6 @@ namespace MeshMVC;
 			return $this;
 		}
 
-        public function filter($filter = null) {
-            $this->filter = $filter;
-            return $this;
-        }
-
-        public function trim($filter = null) {
-            $this->trim = $filter;
-            return $this;
-        }
-
         // when getting output, defines if public functions should be rendered as well as properties
         public function computed($bool) {
             $this->computed = $bool;
@@ -75,9 +63,7 @@ namespace MeshMVC;
                 // when property doesn't start with __, get it
                 $propertyName = $property->getName();
                 if (!in_array($propertyName, self::$class_properties) && strncmp($propertyName, "__", 2) !== 0) {
-                    //if ($this->filter !== "" && $this->isMatched($property->getValue($this), $this->filter)) {
-                        $data[$propertyName] = $property->getValue($this);
-                   // }
+                    $data[$propertyName] = $property->getValue($this);
                 }
             }
 
@@ -89,25 +75,13 @@ namespace MeshMVC;
                     if (!in_array($methodName, self::$class_methods) && strncmp($methodName, "__", 2) !== 0) {
                         // when method isn't a \MeshMVC\Model method and doesn't start with __, invoke it.
                         $methodOutput = $method->invoke($this);
-                        //if ($this->isMatched($methodOutput, $this->filter)) {
-                            $data[$methodName] = $methodOutput;
-                        //}
+                        $data[$methodName] = $methodOutput;
                     }
                 }
             }
 
             // return JSON as json string (not object)
             $data = \MeshMVC\Tools::jsonEncode($data);
+            return $data;
         }
-
-        private function isMatched($value, $filter) {
-            if ($filter === "") {
-                return true;
-            }
-
-            $jsonValue = json_encode([$value]); // Convert value to JSON
-            $filteredData = \MeshMVC\Tools::jsonSelector($jsonValue, $filter, true); // Apply JSON selector with pattern matching
-
-            return $filteredData !== "";
-        }
-	}
+    }
