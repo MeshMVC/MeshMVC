@@ -1,6 +1,7 @@
 <?php
 
 namespace MeshMVC;
+use \JmesPath\Env as JmesPath;
 
 	class Tools
     {
@@ -298,77 +299,138 @@ namespace MeshMVC;
             return json_encode($json, JSON_PRETTY_PRINT);
         }
 
-        // toolkit for manipulating json // $to, $filter, json, string
-        //$json receive as json string (not object)
-        /**
-         * JSON manipulation
-         * @link https://meshmvc.com/????
-         * @param string $json <p>
-         * JSON string (not decoded object)
-         * </p>
-         * @param string $selector <p>
-         * JSON returned will only contain items within this selector
-         * </p>
-         * @param string $value [optional]<p>
-         * When set, value will be applied to all items of selector, input is JSON string, not objects
-         * </p>
-         * @param string $trim_selector [optional]<p>
-         * When set, remove items matching trim_selector
-         * </p>
-         * @return string returns JSON string (encoded)
-         * @throws \Exception when decoding fails
-         */
-        public static function jsonSelector(?string $json, string $selector = "*", $value = null, string $trim_selector = "") : string
-        {
-            // Parse the JSON
-            $jsonArray = json_decode($json, true);
-            if (json_last_error() != JSON_ERROR_NONE) {
-                throw new \Exception('Invalid input JSON');
-            }
+        public static function jsonRemoveMatching(string $json, string $selector): string {
+            // Decode the JSON string to an associative array
+            $jsonData = json_decode($json, true);
 
-            // If $value is a string, try to decode it into an array
-            if (is_string($value)) {
-                $parsedValue = json_decode($value, true);
-                if (json_last_error() == JSON_ERROR_NONE) {
-                    // If $value is a valid JSON string, use the parsed array
-                    $value = $parsedValue;
-                }
-            }
+            // Create a new array to hold the modified data
+            $modifiedData = [];
 
-            // Handle the trim_selector option
-            if ($trim_selector && isset($jsonArray[$trim_selector])) {
-                unset($jsonArray[$trim_selector]);
-            }
+            // Iterate over the original data
+            foreach ($jsonData as $key => $value) {
+                // Use JMESPath to check if the current item matches the selector
+                $result = JmesPath::search($selector, $value);
 
-            // Handle the selector option
-            if ($selector !== "*") {
-                $selectorParts = explode('.', $selector);
-                $temp = &$jsonArray;
-                foreach ($selectorParts as $part) {
-                    if (!array_key_exists($part, $temp)) {
-                        return '{}'; // Return empty object if the selector does not exist
-                    }
-                    $temp = &$temp[$part];
+                // If the result is not null, it means the current item matches the selector.
+                // In this case, we skip this item and do not add it to the modified data.
+                if ($result !== null) {
+                    continue;
                 }
 
-                // If $value is set, update the value of the selected key
-                if ($value !== null) {
-                    $temp = $value;
-                }
-
-                // Wrap result in an array if the selector is not a wildcard
-                return json_encode([$part => $temp], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            } else {
-                // If selector is "*", replace all values or set to $value
-                if ($value !== null) {
-                    $newArray = [];
-                    foreach ($jsonArray as $key => $item) {
-                        $newArray[$key] = $value;
-                    }
-                    $jsonArray = $newArray;
-                }
+                // Otherwise, we add this item to the modified data
+                $modifiedData[$key] = $value;
             }
 
-            return json_encode($jsonArray, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            // Convert the modified data back to a JSON string
+            $modifiedJson = json_encode($modifiedData);
+
+            // Return the modified JSON
+            return $modifiedJson;
         }
+
+
+        public static function jsonAppend(string $json, string $selector, $newData): string {
+            // Decode the JSON string to an associative array
+            $jsonData = json_decode($json, true);
+
+            // Create a new array
+            $modifiedData = [];
+
+            // Iterate over the original data
+            foreach ($jsonData as $key => $value) {
+                // Use JMESPath to check if the current item matches the selector
+                $result = JmesPath::search($selector, $value);
+
+                // If the result is not null, it means the current item matches the selector.
+                // In this case, we add the new data before this item.
+                if ($result !== null) {
+                    $modifiedData = array_merge($modifiedData, $newData);
+                }
+
+                $modifiedData[$key] = $value;
+            }
+
+            // Convert the modified data back to a JSON string
+            $modifiedJson = json_encode($modifiedData);
+
+            // Return the modified JSON
+            return $modifiedJson;
+        }
+
+        public static function jsonPrepend(string $json, string $selector, $newData): string {
+            // Decode the JSON string to an associative array
+            $jsonData = json_decode($json, true);
+
+            // Create a new array
+            $modifiedData = [];
+
+            // Iterate over the original data
+            foreach ($jsonData as $key => $value) {
+                // Use JMESPath to check if the current item matches the selector
+                $result = JmesPath::search($selector, $value);
+
+                // If the result is not null, it means the current item matches the selector.
+                // In this case, we prepend the new data before this item.
+                if ($result !== null) {
+                    $modifiedData = array_merge($newData, $modifiedData);
+                }
+
+                $modifiedData[$key] = $value;
+            }
+
+            // Convert the modified data back to a JSON string
+            $modifiedJson = json_encode($modifiedData);
+
+            // Return the modified JSON
+            return $modifiedJson;
+        }
+
+        public static function jsonMerge(string $json, string $selector, $newData): string {
+            // Decode the JSON string to an associative array
+            $jsonData = json_decode($json, true);
+
+            // Iterate over the original data
+            foreach ($jsonData as $key => &$value) {
+                // Use JMESPath to check if the current item matches the selector
+                $result = JmesPath::search($selector, $value);
+
+                // If the result is not null, it means the current item matches the selector.
+                // In this case, we merge the new data with the current item.
+                if ($result !== null) {
+                    if (is_array($value) && is_array($newData)) {
+                        $value = array_merge($value, $newData);
+                    }
+                }
+            }
+
+            // Convert the modified data back to a JSON string
+            $modifiedJson = json_encode($jsonData);
+
+            // Return the modified JSON
+            return $modifiedJson;
+        }
+
+        public static function jsonReplace(string $json, string $selector, $newData): string {
+            // Decode the JSON string to an associative array
+            $jsonData = json_decode($json, true);
+
+            // Iterate over the original data
+            foreach ($jsonData as $key => &$value) {
+                // Use JMESPath to check if the current item matches the selector
+                $result = JmesPath::search($selector, $value);
+
+                // If the result is not null, it means the current item matches the selector.
+                // In this case, we replace the current item with the new data.
+                if ($result !== null) {
+                    $value = $newData;
+                }
+            }
+
+            // Convert the modified data back to a JSON string
+            $modifiedJson = json_encode($jsonData);
+
+            // Return the modified JSON
+            return $modifiedJson;
+        }
+
     }

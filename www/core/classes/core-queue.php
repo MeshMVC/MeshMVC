@@ -3,7 +3,7 @@
 
     // include core libs
 	require_once(PATH . 'core/lib/phpquery/phpQuery-onefile.php');
-	require_once(PATH . "core/lib/topsort/vendor/autoload.php");
+	require_once(PATH . "core/lib/autoload.php");
 
 	class Queue {
 		public static $complete_output = "";
@@ -195,30 +195,31 @@
                     $filter = "*";
                 }
 
+                $destination = $to;
                 if (empty($from)) {
                     $from = null;
+                } else {
+                    $destination = \MeshMVC\Tools::jsonRemoveMatching($destination, $trim);
                 }
 
-                /* use
+                // prepend, append, replace, merge (default)
                 switch ($display_mode) {
                     case "prepend":
-                        $destination[$to]->prepend($content);
+                        $destination = \MeshMVC\Tools::jsonPrepend($destination, $filter, $from);
                         break;
                     case "append":
-                        $destination[$to]->append($content);
+                        $destination = \MeshMVC\Tools::jsonAppend($destination, $filter, $from);
                         break;
                     case "replace":
-                        $destination[$to]->replaceWith($content);
+                        $destination = \MeshMVC\Tools::jsonReplace($destination, $filter, $from);
                         break;
-                    case "inner":
-                        $destination[$to]->html($content);
+                    case "merge":
+                        $destination = \MeshMVC\Tools::jsonMerge($destination, $filter, $from);
                         break;
                     default:
-                        $destination[$to]->append($content);
+                        $destination = \MeshMVC\Tools::jsonReplace($destination, $filter, $from);
                 }
-                */
 
-                $destination = \MeshMVC\Tools::jsonSelector($to, $filter, $from, $trim);
                 return $destination;
 
                 // using wrapper hack to get outerHTML

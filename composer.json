@@ -3,7 +3,8 @@
 
   "require": {
     "marcj/topsort": "^2.0",
-    "softcreatr/jsonpath": "^0.8",
+    "mtdowling/jmespath.php": "^2.7",
+    "halaxa/json-machine": "^1.1",
 
     "aws/aws-sdk-php": "^3.0",
 
@@ -13,7 +14,6 @@
     "league/oauth2-instagram": "^3.0",
     "league/oauth2-linkedin": "^5.0",
     "league/flysystem": "^3.0"
-
 
   },
   "config": {

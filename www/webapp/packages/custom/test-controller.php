@@ -113,16 +113,17 @@ class _models_test extends \MeshMVC\Controller {
         */
 
         view(new SimpleModel())
-        ->filter("test1") // filter properties and methods for selected
-        ->trim("test3"); // filter to remove properties and methods for selected
+        ->filter("test1"); // filter properties and methods for selected
+
+        //->trim("test3"); // filter to remove properties and methods for selected
+
         //->to("test[0].property1");
+
         // output would be automatic
         //->by("append"); // default merge
 
-        /*
         view(new Page())
             ->trim("user_id") // filter to remove properties and methods for selected
             ->to("test1");
-        */
     }
 }
