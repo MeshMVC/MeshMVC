@@ -148,4 +148,3 @@ namespace MeshMVC;
 			self::query($sql);
 		}
 	}
-?>

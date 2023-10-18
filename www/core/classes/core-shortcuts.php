@@ -36,7 +36,20 @@
 		return \MeshMVC\Tools::queryURL($url);
 	}
 
-	// query url
+    /**
+     * gets input parameter from BODY post as json
+     * @link https://meshmvc.com/????
+     * @param string $var <p>
+     * The searched variable, when null returns all parameters
+     * </p>
+     * @return mixed
+     * false otherwise.
+     */
+    function input($var = null) {
+        return \MeshMVC\Tools::input($var);
+    }
+
+    // query url
 	function t($translate_string_id) {
 		return \MeshMVC\Tools::translate($translate_string_id);
 	}
@@ -72,6 +85,18 @@
 	    $current_this = \MeshMVC\Cross::$currentController;
 		@$current_this->needs($controllers);
 		return $current_this;
+	}
+
+	/**
+	 * Test the current request method, i.e. "POST", "GET"
+	 * @link https://meshmvc.com/????
+	 * @param string $request_method <p>
+	 *
+	 * </p>
+	 * @return bool returns true when request method matches the parameter
+	 */
+	function method($request_method) {
+		return \MeshMVC\Tools::method($request_method);
 	}
 
 	/**
@@ -125,4 +150,3 @@
 		return \MeshMVC\Tools::redirect($url);
 	}
 
-?>

@@ -34,4 +34,3 @@
 
 	// Execution queue start
 	require_once PATH."core/classes/core-queue.php";
-?>

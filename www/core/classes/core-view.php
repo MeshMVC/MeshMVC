@@ -1,6 +1,7 @@
 <?php
 
 namespace MeshMVC;
+use GraphQL;
 
 	// Core Controller class for all controller objects to extend
 	class View {
@@ -9,6 +10,7 @@ namespace MeshMVC;
         public $trim = '';
         public $to = ''; 	// to selector -> default override all previous templates
         public $cache = false; // caching
+        public $vars = [];
 
         public $display_type = "html"; // html, text or json
         public $display_mode = "append"; // or prepend, append, replace, replace_inner
@@ -17,11 +19,14 @@ namespace MeshMVC;
         public $doRenderOnDestruct = true;
 
         // constructor requires filename of view
-        public function __construct($from) {
+        public function __construct(mixed $from) {
             \MeshMVC\Cross::$currentView = $this;
 
             if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
                 $this->display_type = "json";
+            }
+            if (is_object($from) && in_array('MeshMVC\GQL', [get_class($from)], true)) {
+                $this->display_type = "gql";
             }
 			$this->from = $from;
 
@@ -32,7 +37,7 @@ namespace MeshMVC;
             \MeshMVC\Cross::$currentView = $this;
             //TODO: if cached with cache_key: output cache data
 
-            return \MeshMVC\Queue::parse($this->from, $currentOutput, $this->filter, $this->trim,  $this->to, $this->display_type, $this->display_mode, $this->use_models, 0);
+            return \MeshMVC\Queue::parse($this, $currentOutput, 0);
         }
 
         //return as string
@@ -71,7 +76,13 @@ namespace MeshMVC;
 			return $this;
 		}
 
-		// filter applied on from
+        public function vars($variables) {
+            \MeshMVC\Cross::$currentView = $this;
+            $this->vars = $variables;
+            return $this;
+        }
+
+        // filter applied on from
 		public function filter($filter) {
             \MeshMVC\Cross::$currentView = $this;
 			$this->filter = $filter;

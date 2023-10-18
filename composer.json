@@ -5,6 +5,7 @@
     "marcj/topsort": "^2.0",
     "mtdowling/jmespath.php": "^2.7",
     "halaxa/json-machine": "^1.1",
+    "webonyx/graphql-php": "^15.7",
 
     "aws/aws-sdk-php": "^3.0",
 

@@ -6,9 +6,17 @@ use \JmesPath\Env as JmesPath;
 	class Tools
     {
 
-        public static function version()
-        {
-            return file_get_contents("/build.version");
+        private static $rawInput = null;
+
+        public static function input($var=null) {
+            if (self::$rawInput == null) {
+                self::$rawInput = file_get_contents('php://input');
+            }
+            $ret = json_decode(self::$rawInput, true);
+            if ($var != null) {
+                return $ret[$var] ?? null;
+            }
+            return $ret ?? null;
         }
 
         // test if current user has access level
@@ -289,6 +297,10 @@ use \JmesPath\Env as JmesPath;
             }
         }
 
+        public static function method($test) : bool {
+            return (strtolower($_SERVER['REQUEST_METHOD']) == strtolower($test));
+        }
+
         public static function jsonDecode($json) {
             if (empty($json)) throw new \Exception("Empty json!");
             return json_decode($json, true);
@@ -299,35 +311,25 @@ use \JmesPath\Env as JmesPath;
             return json_encode($json, JSON_PRETTY_PRINT);
         }
 
-        public static function jsonRemoveMatching(string $json, string $selector): string {
-            // Decode the JSON string to an associative array
-            $jsonData = json_decode($json, true);
-
-            // Create a new array to hold the modified data
-            $modifiedData = [];
-
-            // Iterate over the original data
-            foreach ($jsonData as $key => $value) {
-                // Use JMESPath to check if the current item matches the selector
-                $result = JmesPath::search($selector, $value);
-
-                // If the result is not null, it means the current item matches the selector.
-                // In this case, we skip this item and do not add it to the modified data.
-                if ($result !== null) {
-                    continue;
-                }
-
-                // Otherwise, we add this item to the modified data
-                $modifiedData[$key] = $value;
-            }
-
-            // Convert the modified data back to a JSON string
-            $modifiedJson = json_encode($modifiedData);
-
-            // Return the modified JSON
-            return $modifiedJson;
+        public static function jsonRemoveMatching($json, $pattern): string {
+            $data = json_decode($json, true);
+            $data = self::recursiveRemoveMatching($data, $pattern);
+            return json_encode($data);
         }
 
+        private static function recursiveRemoveMatching($data, $pattern) {
+            if (is_array($data)) {
+                foreach ($data as $key => $value) {
+                    if (is_array($value)) {
+                        $data[$key] = self::recursiveRemoveMatching($value, $pattern);
+                    }
+                    if (fnmatch($pattern, $key)) {
+                        unset($data[$key]);
+                    }
+                }
+            }
+            return $data;
+        }
 
         public static function jsonAppend(string $json, string $selector, $newData): string {
             // Decode the JSON string to an associative array

@@ -1,5 +1,6 @@
 <?php
 	namespace MeshMVC;
+    use GraphQL\GraphQL;
 
     // include core libs
 	require_once(PATH . 'core/lib/phpquery/phpQuery-onefile.php');
@@ -47,8 +48,18 @@
             }
         }
 
-        public static function parse($from="", $function_output="", $filter="", $trim="", $to="", $display_type="html", $display_mode="append", $use_models=true, $recursion_level=0)
-        {
+        public static function parse(\MeshMVC\View $view, $function_output = "", $recursion_level = 0) {
+
+            $from = $view->from;
+            $filter = $view->filter;
+            $trim = $view->trim;
+            $to = $view->to;
+            $vars = $view->vars;
+            $display_type = $view->display_type;
+            $display_mode = $view->display_mode;
+
+            $use_models = true; // default: true (render models within brackets ex: "[user.email]")
+
 
             if ($recursion_level > 999999)
                 throw new \Exception("Template surpasses maximum recursion level. (Prevented infinite loop from crashing server)");
@@ -65,7 +76,7 @@
 
             // TODO: add options to download via FTP, S3, etc
             // view is string or file or URL
-            if ( ($display_type !="json") && (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://')) {
+            if ( ($display_type !="json" && $display_type !="gql") && (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://')) {
 
                 // fetch url content into output
                 try {
@@ -81,7 +92,7 @@
                     throw new \Exception("Couldn't fetch URL: " . $from);
                 }
 
-            } elseif ($display_type !="json") {
+            } elseif ($display_type == "html") {
 
                 // find all views
                 $paths_to_load = [];
@@ -176,55 +187,64 @@
                 return $destination;
 
             } elseif ($display_type == "json") {
-                // get from as json
                 $place_me = null;
-                $filtered = null;
+                $destination = "";
                 if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
                     if ($to == "") {
                         // override all previous templates if no target specified
-                        $to = $from->json();
-                        $from = "";
+                        $destination = $from->json();
+                        $place_me = "";
                     } else {
-                        $from = $from->json();
-                        $filter = $to;
-                        $to = $function_output;
+                        // when target specified, place new json
+                        $destination = $function_output;
+                        $place_me = $from->json();
                     }
                 }
 
-                if (empty($filter)) {
-                    $filter = "*";
+                if (!empty($to) && !empty($placeme)) {
+                    // prepend, append, replace, merge (default)
+                    switch ($display_mode) {
+                        case "prepend":
+                            $destination = \MeshMVC\Tools::jsonPrepend($destination, $to, $place_me);
+                            break;
+                        case "append":
+                            $destination = \MeshMVC\Tools::jsonAppend($destination, $to, $place_me);
+                            break;
+                        case "replace":
+                            $destination = \MeshMVC\Tools::jsonReplace($destination, $to, $place_me);
+                            break;
+                        case "merge":
+                            $destination = \MeshMVC\Tools::jsonMerge($destination, $to, $place_me);
+                            break;
+                        default:
+                            $destination = \MeshMVC\Tools::jsonReplace($destination, $to, $place_me);
+                    }
+                } elseif (!empty($to)) {
+                    $destination = $place_me;
                 }
 
-                $destination = $to;
-                if (empty($from)) {
-                    $from = null;
-                } else {
+                if (!empty($trim)) {
                     $destination = \MeshMVC\Tools::jsonRemoveMatching($destination, $trim);
-                }
-
-                // prepend, append, replace, merge (default)
-                switch ($display_mode) {
-                    case "prepend":
-                        $destination = \MeshMVC\Tools::jsonPrepend($destination, $filter, $from);
-                        break;
-                    case "append":
-                        $destination = \MeshMVC\Tools::jsonAppend($destination, $filter, $from);
-                        break;
-                    case "replace":
-                        $destination = \MeshMVC\Tools::jsonReplace($destination, $filter, $from);
-                        break;
-                    case "merge":
-                        $destination = \MeshMVC\Tools::jsonMerge($destination, $filter, $from);
-                        break;
-                    default:
-                        $destination = \MeshMVC\Tools::jsonReplace($destination, $filter, $from);
                 }
 
                 return $destination;
 
-                // using wrapper hack to get outerHTML
+            } elseif ($display_type == "gql") {
+                try {
+                    $result = GraphQL::executeQuery($from->schema, $filter, $display_mode, null, $vars);
+                } catch (\Exception $e) {
+                    $result = [
+                        'error' => [
+                            'message' => $e->getMessage(),
+                        ],
+                    ];
+                }
+                return json_encode($result, JSON_THROW_ON_ERROR);
+
             } elseif ($display_type == "text") {
+
                 return $processed_output;
+
             }
 
             return new \Exception("Unknown display type (".$display_type.") for view.");
@@ -387,4 +407,3 @@
 	// Run Core
 	$core = new \MeshMVC\Queue();
 	$core->process();
-?>

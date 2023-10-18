@@ -1,6 +1,14 @@
 <?php
 
 namespace MeshMVC;
+use GraphQL\Utils\BuildSchema;
+
+    class GQL {
+        public $schema = null;
+        public function __construct($schema) {
+            $this->schema = BuildSchema::build($schema);
+        }
+    }
 
 	// chainable class
 	class Model {
