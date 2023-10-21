@@ -1,7 +1,5 @@
 <?php
 
-use \JmesPath\Env as JmesPath;
-
 // TODO: fix apps with namespaces
 // namespace namespace_test
 
@@ -41,7 +39,7 @@ class _home extends \MeshMVC\Controller {
     }
     function run() {
         view("home.html")
-            ->to("#shitters"); // appends page contents to document body
+            ->to("body"); // appends page contents to document body
     }
 }
 

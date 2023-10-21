@@ -26,16 +26,7 @@ class _GQL extends \MeshMVC\Controller {
             ->filter(input("query"))
             ->vars(input("variables"));
     }
-}
 
-class _GQL2 extends \MeshMVC\Controller {
+    // TODO: try huge fake datasource and query GraphQL with schema
 
-    // test with POST body: {"query": "query { echo(message: \"Hello World\") }" }
-    // or: {"query": "mutation { sum(x: 2, y: 3) }" }
-    function sign() {
-        return method("post") && route("/gql") && needs("_GQL");
-    }
-
-    function run() {
-    }
 }

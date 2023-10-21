@@ -274,9 +274,9 @@
                         $append_header = '';
 
                         if ($ext === "css") {
-                            $append_header = '<link href="' . $resource . '" rel="stylesheet" />';
+                            $append_header = '<link href="/' . $resource . '" rel="stylesheet" />';
                         } elseif ($ext === "js") {
-                            $append_header = '<script src="' . $resource . '" type="text/javascript"></script>';
+                            $append_header = '<script src="/' . $resource . '" type="text/javascript"></script>';
                         }
 
                         $doc["html head"]->append($append_header);

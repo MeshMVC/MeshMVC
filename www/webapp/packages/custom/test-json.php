@@ -14,7 +14,7 @@ class SimpleModel extends \MeshMVC\Model {
         return $this->countup();
     }
 
-    public function countup() {
+    private function countup() {
         return ++$this->counter;
     }
 }

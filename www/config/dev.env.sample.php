@@ -1,51 +1,39 @@
 <?php
 
-	namespace MeshMVC;
+namespace MeshMVC;
 
-	class Environment extends \MeshMVC\Config {
+class Environment extends \MeshMVC\Config {
 
-		public static $site_name = "MeshMVC";
+    public const SITE_NAME = "MeshMVC (".self::ENV.")";
 
-		// REQUIRED: define if debugging or not
-		public const DEBUG = true;
+    // REQUIRED: define if debugging or not
+    public const DEBUG = true;
 
-        // app namespace
-        public const APP_NAMESPACE = "myapp";
+    // download settings
+    public const DEFAULT_PROXY_AGENT = "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)";
+    public const DEFAULT_PROXY_TIMEOUT_MS = null; // no timeouts by default
+    public const DEFAULT_PROXY_VALIDATE_RESPONSE_CODES = true; // returns an error when response code isn't 200
 
-        // download settings
-	    public const DEFAULT_PROXY_AGENT = "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)";
-	    public const DEFAULT_PROXY_TIMEOUT_MS = null; // no timeouts by default
-	    public const DEFAULT_PROXY_VALIDATE_RESPONSE_CODES = true; // returns an error when response code isn't 200 (OK)
-
-        public $storage = [
-            "myS3" => new \MeshMVC\S3(),
-            "mySFTP" => new \MeshMVC\SFTP(),
+    public static $storage = [
+        ["id"=>"my_sql", "type"=>"mysql", "host"=>"localhost", "user"=>"", "password"=>"", "database"=>"my_db"],
+        ["id"=>"my_s3", "type"=>"s3", "key"=>""],
+        ["id"=>"my_sftp", "type"=>"sftp", "host"=>"localhost", "user"=>"", "password"=>"",
         ];
 
-	    public const DB_NAME = "";
+    public const LOG_FILE = PATH."logs/notes.log";
 
-	    public const AWS_S3_KEY = "";
+    // REQUIRED: directories search patterns (can be modified)
+    public static $SEEDS = [
+        // views search pattern
+        "view:webapp/*.*",
+        // controllers search pattern
+        "controller:webapp/*.php",
+        // css auto-discovery search pattern
+        "css:webapp/*.css",
+        // js auto-discovery search pattern
+        "js:webapp/*.js",
+        // media files search pattern
+        "media:webapp/*.*"
+    ];
 
-        public const LOG_FILE = PATH."logs/notes.log";
-
-        // REQUIRED: directories search patterns (can be modified)
-        public static $SEEDS = array(
-            // plugins search pattern
-            "plugin:webapp/packages/plugins/*.php",
-            // views search pattern
-            "view:webapp/*.*",
-            // controllers search pattern
-            "controller:webapp/packages/custom/*.php",
-            // css auto-discovery search pattern
-            "css:webapp/*.css",
-            // js auto-discovery search pattern
-            "js:webapp/*.js",
-            // media files search pattern
-            "media:webapp/*.*"
-        );
-
-        public function __construct() {
-            self::$site_name = self::$site_name ." (".self::ENV.")";
-        }
-
-	}
+}
