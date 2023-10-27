@@ -383,16 +383,11 @@
                     if (method_exists($controller, 'run')) {
                         \MeshMVC\Cross::$currentController = $controller;
                         $controller->run();
-                        // or render each views
+
+                        // render each queued views
                         foreach ($controller->loaded_views as $view) {
-                            if ($view->display_type == "html") {
-                                if ($view->doRenderOnDestruct) {
-                                    self::$complete_output = $view->parseOutput(self::$complete_output);
-                                }
-                            } else {
-                                if ($view->doRenderOnDestruct) {
-                                    self::$complete_output = $view->parseOutput(self::$complete_output);
-                                }
+                            if ($view->doRenderOnDestruct) {
+                                self::$complete_output = $view->parseOutput(self::$complete_output);
                             }
                         }
                     }

@@ -4,7 +4,8 @@ namespace MeshMVC;
 use GraphQL;
 
 	// Core Controller class for all controller objects to extend
-	class View {
+	abstract class View {
+
 		public $from = ''; 	// from template
         public $filter = '';
         public $trim = '';
@@ -32,6 +33,8 @@ use GraphQL;
 
 			return $this;
         }
+
+        public abstract function parse($previousOutput=""): string;
 
         public function parseOutput($currentOutput) {
             \MeshMVC\Cross::$currentView = $this;
@@ -63,7 +66,7 @@ use GraphQL;
 
 		// write to file
         // TODO: write with passed storage object instead, ex: SFTP, DB, S3, Session
-		public function save($filename) {
+		public function export($filename) {
             \MeshMVC\Cross::$currentView = $this;
 			file_put_contents($filename, $this->parseOutput(""));
             return $this;
