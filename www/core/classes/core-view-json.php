@@ -1,6 +1,7 @@
 <?php
 
-namespace MeshMVC;
+namespace MeshMVC\Views;
+use \MeshMVC\View;
 
 // Core Controller class for all controller objects to extend
 class Json extends View {
@@ -15,7 +16,7 @@ class Json extends View {
         // no view template specified
         if ($from == "") throw new \Exception("No view template specified!");
 
-        if (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://') {
+        if ((is_string($from)) && (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://')) {
 
             // fetch url content into output
             try {

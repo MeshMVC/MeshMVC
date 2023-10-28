@@ -22,7 +22,7 @@
             // Search for all files within the seeded directories
             foreach (\MeshMVC\Environment::$SEEDS as $dir) {
                 [$seed_type, $seeded_path] = explode(":", $dir);
-                if ($seed_type === "controller") {
+                if ($seed_type === "controller" || $seed_type === "view") {
                     $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
                 }
             }
@@ -45,209 +45,10 @@
                 if (in_array('MeshMVC\Controller', class_parents($class), true)) {
                     $this->obj_controllers[$class] = new $class;
                 }
-            }
-        }
-
-        public static function parse(\MeshMVC\View $view, $function_output = "", $recursion_level = 0) {
-
-            $from = $view->from;
-            $filter = $view->filter;
-            $trim = $view->trim;
-            $to = $view->to;
-            $vars = $view->vars;
-            $display_type = $view->display_type;
-            $display_mode = $view->display_mode;
-
-            $use_models = true; // default: true (render models within brackets ex: "[user.email]")
-
-
-            if ($recursion_level > 999999)
-                throw new \Exception("Template surpasses maximum recursion level. (Prevented infinite loop from crashing server)");
-
-            $recursion_level++;
-
-            $model = null;
-            if ($use_models) $model = \MeshMVC\Models::getAll();
-
-            $processed_output = "";
-
-            // no view template specified
-            if ($from == "") throw new \Exception("No view template specified!");
-
-            // TODO: add options to download via FTP, S3, etc
-            // view is string or file or URL
-            if ( ($display_type !="json" && $display_type !="gql") && (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://')) {
-
-                // fetch url content into output
-                try {
-                    $fetch = \MeshMVC\Tools::download($from);
-                } catch (\Exception $e) {
-                    // TODO: custom callback option
-                    $fetch = false;
-                }
-                if ($fetch !== false) {
-                    $processed_output = $fetch;
-                } else {
-                    // couldn't fetch url
-                    throw new \Exception("Couldn't fetch URL: " . $from);
-                }
-
-            } elseif ($display_type == "html") {
-
-                // find all views
-                $paths_to_load = [];
-                foreach (\MeshMVC\Environment::$SEEDS as $dir) {
-                    [$seed_type, $seeded_path] = explode(":", $dir);
-                    if ($seed_type === "view") {
-                        $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
-                    }
-                }
-                $paths_to_load = array_unique($paths_to_load);
-
-                // look for exact filename match
-                $foundExactMatch = false;
-                foreach ($paths_to_load as $possibleViewMatchFilename) {
-                    if ($possibleViewMatchFilename == $from) {
-                        $foundExactMatch = true;
-                        $processed_output = file_get_contents($from);
-                        break;
-                    }
-                }
-
-                // on fail, look for basename match
-                if ($foundExactMatch == false) {
-                    $foundBaseMatch = false;
-                    foreach ($paths_to_load as $possibleViewMatchFilename) {
-                        if (basename($possibleViewMatchFilename) == $from) {
-                            $foundBaseMatch = true;
-                            $processed_output = file_get_contents($possibleViewMatchFilename);
-                            break;
-                        }
-                    }
-
-                    // when view can't be found by basename nor by exact filename
-                    if ($foundBaseMatch == false) {
-                        // take view $from as output
-                        $processed_output = $from;
-                    }
+                if (in_array('MeshMVC\View', class_parents($class), true)) {
+                    Cross::$viewTypes[strtolower($class)] = $class::class;
                 }
             }
-
-            if ($display_type == "html") {
-                if ($use_models && count($model) > 0) {
-                    ob_start();
-                    eval("?>" . $processed_output . "<?php");
-                    $processed_output = ob_get_clean();
-                }
-
-                $place_me = null;
-                if ($processed_output !== "" && ($filter !== "" || $trim !== "")) {
-                    // filter if needed
-                    if ($filter) {
-                        $place_me = \phpQuery::newDocumentHTML($processed_output)[$filter];
-                    } else {
-                        $place_me = \phpQuery::newDocumentHTML($processed_output);
-                    }
-
-                    // trim if needed
-                    if ($trim) $place_me = $place_me->find($trim)->remove();
-
-                    $place_me = $place_me->html();
-                } else {
-                    $place_me = $processed_output;
-                }
-
-                if ($to == "") {
-                    // override all previous templates if no target specified
-                    return $place_me;
-                }
-
-                //  get outerHTML
-                $destination = \phpQuery::newDocumentHTML($function_output);
-                $content = $place_me;
-
-                switch ($display_mode) {
-                    case "prepend":
-                        $destination[$to]->prepend($content);
-                        break;
-                    case "append":
-                        $destination[$to]->append($content);
-                        break;
-                    case "replace":
-                        $destination[$to]->replaceWith($content);
-                        break;
-                    case "inner":
-                        $destination[$to]->html($content);
-                        break;
-                    default:
-                        $destination[$to]->append($content);
-                }
-
-                // using wrapper hack to get outerHTML
-                return $destination;
-
-            } elseif ($display_type == "json") {
-                $place_me = null;
-                $destination = "";
-                if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
-                    if ($to == "") {
-                        // override all previous templates if no target specified
-                        $destination = $from->json();
-                        $place_me = "";
-                    } else {
-                        // when target specified, place new json
-                        $destination = $function_output;
-                        $place_me = $from->json();
-                    }
-                }
-
-                if (!empty($to) && !empty($placeme)) {
-                    // prepend, append, replace, merge (default)
-                    switch ($display_mode) {
-                        case "prepend":
-                            $destination = \MeshMVC\Tools::jsonPrepend($destination, $to, $place_me);
-                            break;
-                        case "append":
-                            $destination = \MeshMVC\Tools::jsonAppend($destination, $to, $place_me);
-                            break;
-                        case "replace":
-                            $destination = \MeshMVC\Tools::jsonReplace($destination, $to, $place_me);
-                            break;
-                        case "merge":
-                            $destination = \MeshMVC\Tools::jsonMerge($destination, $to, $place_me);
-                            break;
-                        default:
-                            $destination = \MeshMVC\Tools::jsonReplace($destination, $to, $place_me);
-                    }
-                } elseif (!empty($to)) {
-                    $destination = $place_me;
-                }
-
-                if (!empty($trim)) {
-                    $destination = \MeshMVC\Tools::jsonRemoveMatching($destination, $trim);
-                }
-
-                return $destination;
-
-            } elseif ($display_type == "gql") {
-                try {
-                    $result = GraphQL::executeQuery($from->schema, $filter, $display_mode, null, $vars);
-                } catch (\Exception $e) {
-                    $result = [
-                        'error' => [
-                            'message' => $e->getMessage(),
-                        ],
-                    ];
-                }
-                return json_encode($result, JSON_THROW_ON_ERROR);
-
-            } elseif ($display_type == "text") {
-
-                return $processed_output;
-
-            }
-
-            return new \Exception("Unknown display type (".$display_type.") for view.");
         }
 
         public static function output()
@@ -387,7 +188,7 @@
                         // render each queued views
                         foreach ($controller->loaded_views as $view) {
                             if ($view->doRenderOnDestruct) {
-                                self::$complete_output = $view->parseOutput(self::$complete_output);
+                                self::$complete_output = $view->parse(self::$complete_output);
                             }
                         }
                     }

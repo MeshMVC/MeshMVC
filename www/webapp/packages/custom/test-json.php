@@ -60,8 +60,9 @@ class _models_test extends \MeshMVC\Controller {
         die();
         */
 
-        view(new SimpleModel()) // filter properties and methods for selected
-        ->trim("test3"); // filter to remove properties and methods for selected
+        view("json")
+            ->from(new SimpleModel())// filter properties and methods for selected
+            ->trim("test3"); // filter to remove properties and methods for selected
 
         //->to("test[0].property1");
 

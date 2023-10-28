@@ -1,6 +1,7 @@
 <?php
 
-namespace MeshMVC;
+namespace MeshMVC\Views;
+use \MeshMVC\View;
 
 // Core Controller class for all controller objects to extend
 class Text extends View {
@@ -33,6 +34,8 @@ class Text extends View {
                 throw new \Exception("Couldn't fetch URL: " . $from);
             }
 
+        } else {
+            $processed_output = $from;
         }
 
         $place_me = null;
@@ -41,16 +44,15 @@ class Text extends View {
             if ($filter) {
                 $matches = [];
                 if (preg_match_all($filter, $processed_output, $matches)) {
-                    $place_me = implode("", $matches);
+                    $place_me = implode("", $matches[0]);
                 }
             } else {
                 $place_me = $processed_output;
             }
 
             // trim if needed
-            $matches = [];
-            if (preg_match_all($trim, $place_me, $matches)) {
-                $place_me = implode("", $matches);
+            if ($trim) {
+                $place_me = implode("", preg_split($trim, $place_me));
             }
         } else {
             $place_me = $processed_output;
@@ -70,18 +72,18 @@ class Text extends View {
         if (!empty($to)) {
             switch ($display_mode) {
                 case "prepend":
-                    $destination = preg_replace_callback($to, function ($matches) {
+                    $destination = preg_replace_callback($to, function ($matches) use ($content){
                         return $content . $matches[0];
                     }, $destination);
                     break;
                 case "append":
-                    $destination = preg_replace_callback($to, function ($matches) {
+                    $destination = preg_replace_callback($to, function ($matches) use ($content) {
                         return $matches[0].$content;
                     }, $destination);
                     break;
                 default: // replace
-                    $destination = preg_replace_callback($to, function ($matches) {
-                        return $matches[0];
+                    $destination = preg_replace_callback($to, function ($matches) use ($content) {
+                        return $content;
                     }, $destination);
             }
         } else {

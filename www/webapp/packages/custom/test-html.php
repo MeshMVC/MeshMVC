@@ -9,7 +9,8 @@ class _html extends \MeshMVC\Controller {
         return route("/html/*");
     }
     function run() {
-        view("html.html");
+        view("html")
+            ->from("html.html");
     }
 }
 
@@ -27,7 +28,8 @@ class _page_components extends \MeshMVC\Controller {
     function run() {
         model("page", new Page());
 
-        view("title.html")
+        view("html")
+            ->from("title.html")
         ->to("html head"); // appends to body header element
     }
 }
@@ -38,7 +40,8 @@ class _home extends \MeshMVC\Controller {
         return route("/html/home") && needs("_page_components"); // _html controller class dependency
     }
     function run() {
-        view("home.html")
+        view("html")
+            ->from("home.html")
             ->to("body"); // appends page contents to document body
     }
 }
@@ -49,7 +52,8 @@ class _resume extends \MeshMVC\Controller {
         return route("/html/resume") && needs("_page_components"); // _html controller class dependency
     }
     function run() {
-        view("https://luclaverdure.com")
+        view("html")
+            ->from("https://luclaverdure.com")
             ->filter("#history p:eq(0)")
 
             ->to("html body"); // appends page contents to document body

@@ -62,8 +62,13 @@
 	 * </p>
 	 * @return \MeshMVC\View returns current View (Chainable with Fluent Interface)
 	 */
-	function view($object) {
-		\MeshMVC\Cross::$currentController->addView(new \MeshMVC\View($object));
+	function view($type) {
+        foreach (\MeshMVC\Cross::$viewTypes as $ktype => $class) {
+            if (strtolower($type) == strtolower($ktype)) {
+                \MeshMVC\Cross::$currentController->addView(new $class);
+            }
+        }
+
 		return \MeshMVC\Cross::$currentView;
 	}
 

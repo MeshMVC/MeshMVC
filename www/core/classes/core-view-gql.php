@@ -1,6 +1,7 @@
 <?php
 
-namespace MeshMVC;
+namespace MeshMVC\Views;
+use \MeshMVC\View;
 
 // Core Controller class for all controller objects to extend
 use GraphQL\GraphQL;
@@ -16,7 +17,7 @@ class Gql extends View {
         if ($from == "") throw new \Exception("No view template specified!");
 
         try {
-            $result = GraphQL::executeQuery($from->schema, $filter, $display_mode, null, $vars);
+            $result = GraphQL::executeQuery($from->schema, $filter, $display_mode, null, $this->vars);
         } catch (\Exception $e) {
             $result = [
                 'error' => [

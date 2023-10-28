@@ -1,6 +1,7 @@
 <?php
 
-namespace MeshMVC;
+namespace MeshMVC\Views;
+use \MeshMVC\View;
 
 // Core Controller class for all controller objects to extend
 class Html extends View {
@@ -42,7 +43,7 @@ class Html extends View {
             $paths_to_load = [];
             foreach (\MeshMVC\Environment::$SEEDS as $dir) {
                 [$seed_type, $seeded_path] = explode(":", $dir);
-                if ($seed_type === "view") {
+                if ($seed_type === "template") {
                     $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
                 }
             }

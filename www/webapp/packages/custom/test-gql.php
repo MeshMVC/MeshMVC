@@ -9,7 +9,8 @@ class _GQL extends \MeshMVC\Controller {
     }
 
     function run() {
-        view(new \MeshMVC\GQL('
+        view("gql")
+            ->from(new \MeshMVC\GQL('
             type Query {
               echo(message: String!): String!
             }

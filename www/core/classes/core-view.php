@@ -20,34 +20,18 @@ use GraphQL;
         public $doRenderOnDestruct = true;
 
         // constructor requires filename of view
-        public function __construct(mixed $from) {
+        public function __construct() {
             \MeshMVC\Cross::$currentView = $this;
-
-            if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
-                $this->display_type = "json";
-            }
-            if (is_object($from) && in_array('MeshMVC\GQL', [get_class($from)], true)) {
-                $this->display_type = "gql";
-            }
-			$this->from = $from;
-
 			return $this;
         }
 
-        public abstract function parse($previousOutput=""): string;
-
-        public function parseOutput($currentOutput) {
-            \MeshMVC\Cross::$currentView = $this;
-            //TODO: if cached with cache_key: output cache data
-
-            return \MeshMVC\Queue::parse($this, $currentOutput, 0);
-        }
+        public abstract function parse($previousOutput = ""): string;
 
         //return as string
         public function toString() {
             \MeshMVC\Cross::$currentView = $this;
             $this->doRenderOnDestruct = false;
-            return $this->parseOutput("");
+            return $this->parse();
         }
 
 		// set caching
@@ -68,14 +52,20 @@ use GraphQL;
         // TODO: write with passed storage object instead, ex: SFTP, DB, S3, Session
 		public function export($filename) {
             \MeshMVC\Cross::$currentView = $this;
-			file_put_contents($filename, $this->parseOutput(""));
+			file_put_contents($filename, $this->parse());
             return $this;
 		}
 
 		// from template filename
 		public function from($from) {
             \MeshMVC\Cross::$currentView = $this;
-			$this->from = $from;
+            if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
+                $this->display_type = "json";
+            }
+            if (is_object($from) && in_array('MeshMVC\GQL', [get_class($from)], true)) {
+                $this->display_type = "gql";
+            }
+            $this->from = $from;
 			return $this;
 		}
 
