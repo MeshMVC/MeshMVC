@@ -1,0 +1,54 @@
+{
+	"type": "object",
+	"properties": {
+		"level": {
+			"description": "Indicates whether the tag is used by agencies or organizers.",
+			"type": "string",
+			"enum": [
+				"agency",
+				"organizer"
+			]
+		},
+		"name": {
+			"description": "Name of the tag.",
+			"type": "string",
+			"minLength": 1
+		},
+		"private": {
+			"description": "Indicates whether an agency tag should be visible by organizers, and vice versa.",
+			"type": "boolean",
+			"default": false
+		},
+		"readonly": {
+			"description": "Has the value `true` if a tag can only be added to an object by the system or the value `false` if it can manually be added to an object by an authenticated user.",
+			"type": "boolean",
+			"default": false
+		},
+		"scopes": {
+			"description": "Array of object types to which the tag may be added to.",
+			"type": "array",
+			"items": {
+				"type": "string",
+				"enum": [
+					"contact",
+					"event",
+					"order",
+					"organizer",
+					"rate"
+				]
+			},
+			"minItems": 1
+		},
+		"score": {
+			"description": "Number of points added to an object having this tag.",
+			"type": "integer",
+			"minimum": 0,
+			"default": 0
+		}
+	},
+	"required": [
+		"level",
+		"name",
+		"scopes"
+	]
+}

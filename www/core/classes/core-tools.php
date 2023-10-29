@@ -8,6 +8,10 @@ use \JmesPath\Env as JmesPath;
 
         private static $rawInput = null;
 
+        public static function is_url($url) {
+            return filter_var($url, FILTER_VALIDATE_URL);
+        }
+
         public static function input($var=null) {
             if (self::$rawInput == null) {
                 self::$rawInput = file_get_contents('php://input');
@@ -27,8 +31,20 @@ use \JmesPath\Env as JmesPath;
             return $user->access($access_level);
         }
 
-        public static function download($url, $proxy = null)
-        {
+        public static function download($url, $proxy = null)  {
+
+            // fix relative urls to absolute urls to this server
+            if (str_starts_with($url, "/")) {
+                $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+                $domainName = $_SERVER['HTTP_HOST'];
+                $baseUrl = $protocol . $domainName;
+                $url = $baseUrl.$url;
+            }
+
+            if ($proxy == null) {
+                return file_get_contents($url);
+            }
+
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_PROXY, $proxy);
@@ -297,7 +313,8 @@ use \JmesPath\Env as JmesPath;
             }
         }
 
-        public static function method($test) : bool {
+        public static function method($test = null) : bool|string {
+            if (empty($test)) return $_SERVER['REQUEST_METHOD'];
             return (strtolower($_SERVER['REQUEST_METHOD']) == strtolower($test));
         }
 
@@ -307,7 +324,7 @@ use \JmesPath\Env as JmesPath;
         }
 
         public static function jsonEncode($json) {
-            if (empty($json)) throw new \Exception("Empty json!");
+            if (empty($json)) return ""; //throw new \Exception("Empty json!");
             return json_encode($json, JSON_PRETTY_PRINT);
         }
 
@@ -412,27 +429,30 @@ use \JmesPath\Env as JmesPath;
             return $modifiedJson;
         }
 
-        public static function jsonReplace(string $json, string $selector, $newData): string {
-            // Decode the JSON string to an associative array
-            $jsonData = json_decode($json, true);
+        public static function jsonReplace(string $json, string $to, string $content): string {
+            $data = json_decode($json, true);
+            $keys = explode('.', $to);
+            $data = self::recursiveReplace($data, $keys, json_decode($content, true));
+            return self::jsonEncode($data);
+        }
 
-            // Iterate over the original data
-            foreach ($jsonData as $key => &$value) {
-                // Use JMESPath to check if the current item matches the selector
-                $result = JmesPath::search($selector, $value);
-
-                // If the result is not null, it means the current item matches the selector.
-                // In this case, we replace the current item with the new data.
-                if ($result !== null) {
-                    $value = $newData;
+        private static function recursiveReplace($data, $keys, $content) {
+            $key = array_shift($keys);
+            if (is_array($data)) {
+                foreach ($data as $k => $value) {
+                    if (is_array($value)) {
+                        $data[$k] = self::recursiveReplace($value, $keys, $content);
+                    }
+                    if ($k === $key) {
+                        if (empty($keys)) {
+                            $data[$key] = $content;
+                        } else {
+                            $data[$key] = self::recursiveReplace($value, $keys, $content);
+                        }
+                    }
                 }
             }
-
-            // Convert the modified data back to a JSON string
-            $modifiedJson = json_encode($jsonData);
-
-            // Return the modified JSON
-            return $modifiedJson;
+            return $data;
         }
 
     }

@@ -1,0 +1,36 @@
+{
+	"type": "object",
+	"properties": {
+		"contact_id": {
+			"description": "Contact ID.",
+			"type": "integer",
+			"minimum": 1
+		},
+		"first": {
+			"description": "Contact first name.",
+			"type": "string",
+			"minLength": 1
+		},
+		"gender": {
+			"description": "Contact gender.",
+			"type": "string",
+			"enum": [
+				"F",
+				"M",
+				"O",
+				"X"
+			],
+			"nullable": true
+		},
+		"last": {
+			"description": "Contact last name.",
+			"type": "string",
+			"minLength": 1
+		}
+	},
+	"required": [
+		"contact_id",
+		"first",
+		"last"
+	]
+}

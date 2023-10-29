@@ -35,7 +35,7 @@
     require_once PATH."core/classes/core-view-html.php";
     require_once PATH."core/classes/core-view-json.php";
     require_once PATH."core/classes/core-view-text.php";
-
+    require_once PATH."core/classes/core-view-openapi.php";
 
 	require_once PATH."core/classes/core-controller.php";
 	require_once PATH."core/classes/core-shortcuts.php";

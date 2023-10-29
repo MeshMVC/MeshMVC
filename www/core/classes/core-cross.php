@@ -12,6 +12,7 @@ namespace MeshMVC;
             "html" => \MeshMVC\Views\Html::class,
             "json" => \MeshMVC\Views\Json::class,
             "text" => \MeshMVC\Views\Text::class,
+            "openapi" => \MeshMVC\Views\OpenAPI::class,
         ];
 
         public function __construct() {

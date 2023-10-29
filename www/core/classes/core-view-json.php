@@ -12,44 +12,37 @@ class Json extends View {
         $trim = $this->trim;
         $to = $this->to;
         $display_mode = $this->display_mode;
+        $destination = "";
+        $processed_output = "";
+        $place_me = null;
 
         // no view template specified
         if ($from == "") throw new \Exception("No view template specified!");
 
-        if ((is_string($from)) && (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://')) {
-
-            // fetch url content into output
+        if (is_string($from) && (str_starts_with($from, "/") || \MeshMVC\Tools::is_url($from))) {
             try {
-                $fetch = \MeshMVC\Tools::download($from);
+                $processed_output = \MeshMVC\Tools::download($from);
             } catch (\Exception $e) {
                 // TODO: custom callback option
-                $fetch = false;
+                throw new \Exception("Couldn't fetch URL: " . $from, 0, $e);
             }
-            if ($fetch !== false) {
-                $processed_output = $fetch;
-            } else {
-                // couldn't fetch url
-                throw new \Exception("Couldn't fetch URL: " . $from);
-            }
-
+        } elseif (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
+            $processed_output = $from->json();
+        } else {
+            $processed_output = $from;
         }
 
-        $place_me = null;
-        $destination = "";
+        $place_me = $processed_output;
 
-        if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
-            if ($to == "") {
-                // override all previous templates if no target specified
-                $destination = $from->json();
-                $place_me = "";
-            } else {
-                // when target specified, place new json
-                $destination = $function_output;
-                $place_me = $from->json();
-            }
+        if (empty($to)) {
+            // override all previous templates if no target specified
+            return $place_me;
         }
 
-        if (!empty($to) && !empty($placeme)) {
+        // when target specified, place new json
+        $destination = $previousOutput;
+
+        if (!empty($to) && !empty($place_me)) {
             // prepend, append, replace, merge (default)
             switch ($display_mode) {
                 case "prepend":
@@ -58,13 +51,10 @@ class Json extends View {
                 case "append":
                     $destination = \MeshMVC\Tools::jsonAppend($destination, $to, $place_me);
                     break;
-                case "replace":
-                    $destination = \MeshMVC\Tools::jsonReplace($destination, $to, $place_me);
-                    break;
                 case "merge":
                     $destination = \MeshMVC\Tools::jsonMerge($destination, $to, $place_me);
                     break;
-                default:
+                default: // replace
                     $destination = \MeshMVC\Tools::jsonReplace($destination, $to, $place_me);
             }
         } elseif (!empty($to)) {
@@ -74,6 +64,8 @@ class Json extends View {
         if (!empty($trim)) {
             $destination = \MeshMVC\Tools::jsonRemoveMatching($destination, $trim);
         }
+
+        if ($destination == null) $destination = "";
 
         return $destination;
 

@@ -26,6 +26,5 @@ class _text_test extends \MeshMVC\Controller {
             ->from("replaced")
             ->by("replace")
             ->to('/p/i');
-
     }
 }

@@ -14,7 +14,11 @@
     "league/oauth2-google": "^4.0",
     "league/oauth2-instagram": "^3.0",
     "league/oauth2-linkedin": "^5.0",
-    "league/flysystem": "^3.0"
+    "league/flysystem": "^3.0",
+
+    "justinrainbow/json-schema": "^5",
+    "league/openapi-psr7-validator": "0.21",
+    "cebe/php-openapi": "^1.7"
 
   },
   "config": {

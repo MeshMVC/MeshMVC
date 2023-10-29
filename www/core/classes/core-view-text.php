@@ -18,22 +18,13 @@ class Text extends View {
         // no view template specified
         if ($from == "") throw new \Exception("No view template specified!");
 
-        if (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://') {
-
-            // fetch url content into output
+        if (str_starts_with($from, "/") || \MeshMVC\Tools::is_url($from)) {
             try {
-                $fetch = \MeshMVC\Tools::download($from);
+                $processed_output = \MeshMVC\Tools::download($from);
             } catch (\Exception $e) {
                 // TODO: custom callback option
-                $fetch = false;
+                throw new \Exception("Couldn't fetch URL: " . $from, 0, $e);
             }
-            if ($fetch !== false) {
-                $processed_output = $fetch;
-            } else {
-                // couldn't fetch url
-                throw new \Exception("Couldn't fetch URL: " . $from);
-            }
-
         } else {
             $processed_output = $from;
         }
@@ -58,7 +49,7 @@ class Text extends View {
             $place_me = $processed_output;
         }
 
-        if ($to == "") {
+        if (empty($to)) {
             // override all previous templates if no target specified
             return $place_me;
         }
@@ -69,35 +60,21 @@ class Text extends View {
 
         // when target ($to) is set, use regex to set content, if not, set content
 
-        if (!empty($to)) {
-            switch ($display_mode) {
-                case "prepend":
-                    $destination = preg_replace_callback($to, function ($matches) use ($content){
-                        return $content . $matches[0];
-                    }, $destination);
-                    break;
-                case "append":
-                    $destination = preg_replace_callback($to, function ($matches) use ($content) {
-                        return $matches[0].$content;
-                    }, $destination);
-                    break;
-                default: // replace
-                    $destination = preg_replace_callback($to, function ($matches) use ($content) {
-                        return $content;
-                    }, $destination);
-            }
-        } else {
-            switch ($display_mode) {
-                case "prepend":
-                    $destination = $content.$destination;
-                    break;
-                case "replace":
-                    $destination = $content;
-                    break;
-                default: // append
-                    $destination = $destination.$content;
-                    break;
-            }
+        switch ($display_mode) {
+            case "prepend":
+                $destination = preg_replace_callback($to, function ($matches) use ($content){
+                    return $content . $matches[0];
+                }, $destination);
+                break;
+            case "append":
+                $destination = preg_replace_callback($to, function ($matches) use ($content) {
+                    return $matches[0].$content;
+                }, $destination);
+                break;
+            default: // replace
+                $destination = preg_replace_callback($to, function ($matches) use ($content) {
+                    return $content;
+                }, $destination);
         }
 
         // using wrapper hack to get outerHTML

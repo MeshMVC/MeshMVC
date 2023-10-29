@@ -88,16 +88,41 @@ class _unit_tests extends \MeshMVC\Controller {
     function run() {
 
         $json = '{ "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }';
-        echo "1:". \MeshMVC\Tools::jsonRemoveMatching($json, "test3")."\n";
+        debug("1:". \MeshMVC\Tools::jsonRemoveMatching($json, "test3"));
         // should output: 1: { "zzz": "zzz", "test1": "value1", "test2": 2, "test4": 4 }
-        echo "2:". \MeshMVC\Tools::jsonRemoveMatching($json, "test*")."\n";
+        debug("2:". \MeshMVC\Tools::jsonRemoveMatching($json, "test*"));
         // should output: 2: { "zzz": "zzz"}
-        echo "3:". \MeshMVC\Tools::jsonRemoveMatching($json, "*est3")."\n";
+        debug("3:". \MeshMVC\Tools::jsonRemoveMatching($json, "*est3"));
         // should output: 3: { "zzz": "zzz", "test1": "value1", "test2": 2, "test4": 4 }
         $json = '{ "zzz": {"x": "Y", "z": "Z"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"} }';
-        echo "4:". \MeshMVC\Tools::jsonRemoveMatching($json, "zzz.x")."\n";
+        debug("4:". \MeshMVC\Tools::jsonRemoveMatching($json, "zzz.x"));
         // should output: 4: { "zzz": {"z": "Z"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"} }
-        echo "5:". \MeshMVC\Tools::jsonRemoveMatching($json, "zzz.*")."\n";
+        debug("5:". \MeshMVC\Tools::jsonRemoveMatching($json, "zzz.*"));
         // should output: 5: { "zzz": {"z": "Z"}, "test2": {"x": "Y"}, "test3": {"x": "Y"}, "test4": {"x": "Y"} }
+    }
+}
+
+class _unit_tests_2 extends \MeshMVC\Controller {
+
+    function sign() {
+        return route("/json/unit2"); // _html controller class dependency
+    }
+
+    function run() {
+
+        $json = '{ "zzz": "zzz", "test1": "value1", "test2": 2, "test3": "executed function", "test4": 4 }';
+        $place_me = '{"x": "Y", "z": "Z"}';
+        $json = \MeshMVC\Tools::jsonReplace($json, "test3", $place_me);
+        debug("1:". $json);
+        // should output: 1:{"zzz":"zzz","test1":"value1","test2":2,"test3":"{"x": "Y", "z": "Z"}","test4":4}
+
+        $json = \MeshMVC\Tools::jsonReplace($json, "test3.x", $place_me);
+        debug("2:". $json);
+        // should output: 2:{"zzz":"zzz","test1":"value1","test2":2,"test3":"{"x": {"x": "Y", "z": "Z"}, "z": "Z"}","test4":4}
+
+        $json = \MeshMVC\Tools::jsonReplace($json, "test3.x.z", $place_me);
+        debug("3:". $json);
+        // should output: 1:{"zzz":"zzz","test1":"value1","test2":2,"test3":"{"x": {"x": "Y", "z": {"x": "Y", "z": "Z"}}, "z": "Z"}","test4":4}
+
     }
 }

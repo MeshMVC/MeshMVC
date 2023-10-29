@@ -59,12 +59,6 @@ use GraphQL;
 		// from template filename
 		public function from($from) {
             \MeshMVC\Cross::$currentView = $this;
-            if (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
-                $this->display_type = "json";
-            }
-            if (is_object($from) && in_array('MeshMVC\GQL', [get_class($from)], true)) {
-                $this->display_type = "gql";
-            }
             $this->from = $from;
 			return $this;
 		}

@@ -19,9 +19,12 @@
 	
 	
 	// query url
-	function q($argNumber_or_inPathString) {
+	function q($argNumber_or_inPathString = 'all') {
 		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
 	}
+    function request_url($argNumber_or_inPathString = 'all') {
+        return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
+    }
 
 	/**
 	 * Determines if current request is within a url
@@ -100,7 +103,7 @@
 	 * </p>
 	 * @return bool returns true when request method matches the parameter
 	 */
-	function method($request_method) {
+	function method($request_method = null) {
 		return \MeshMVC\Tools::method($request_method);
 	}
 

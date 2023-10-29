@@ -1,9 +1,17 @@
 <?php
 
+namespace MeshMVC;
+use GraphQL\Utils\BuildSchema;
+
+class GQL {
+    public $schema = null;
+    public function __construct($schema) {
+        $this->schema = BuildSchema::build($schema);
+    }
+}
+
 namespace MeshMVC\Views;
 use \MeshMVC\View;
-
-// Core Controller class for all controller objects to extend
 use GraphQL\GraphQL;
 
 class Gql extends View {

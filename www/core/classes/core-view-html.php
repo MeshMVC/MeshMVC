@@ -22,22 +22,13 @@ class Html extends View {
         // no view template specified
         if ($from == "") throw new \Exception("No view template specified!");
 
-        if (substr($from, 0, 7) == 'http://' || substr($from, 0, 8) == 'https://') {
-
-            // fetch url content into output
+        if (str_starts_with($from, "/") || \MeshMVC\Tools::is_url($from)) {
             try {
-                $fetch = \MeshMVC\Tools::download($from);
+                $processed_output = \MeshMVC\Tools::download($from);
             } catch (\Exception $e) {
                 // TODO: custom callback option
-                $fetch = false;
+                throw new \Exception("Couldn't fetch URL: " . $from, 0, $e);
             }
-            if ($fetch !== false) {
-                $processed_output = $fetch;
-            } else {
-                // couldn't fetch url
-                throw new \Exception("Couldn't fetch URL: " . $from);
-            }
-
         } else {
             // find all views
             $paths_to_load = [];
