@@ -41,9 +41,9 @@ class _openapi_tag_test extends \MeshMVC\Controller {
         if (view("openapi")
             ->schema($json)
             ->validate_schema()) {
-            echo "Schema validated.";
+            echo "Data/schema validated.";
         } else {
-            echo "Invalid schema!";
+            echo "Invalid data/schema!";
         }
 
     }
@@ -90,9 +90,9 @@ class _openapi_cname_test extends \MeshMVC\Controller {
         if (view("openapi")
             ->schema($json)
             ->validate_schema()) {
-            echo "Schema validated.";
+            echo "Data/schema validated.";
         } else {
-            echo "Invalid schema!";
+            echo "Invalid data/schema!";
         }
 
     }
