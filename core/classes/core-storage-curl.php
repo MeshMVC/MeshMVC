@@ -50,12 +50,8 @@ class Curl extends \MeshMVC\Storage {
     }
 
     public function download($location) : mixed {
-        if (str_starts_with($location, "/")) {
-            $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-            $domainName = $_SERVER['HTTP_HOST'];
-            $baseUrl = $protocol . $domainName;
-            $url = $baseUrl.$location;
-        }
+        $this->performance_start();
+        $this->prefix_download($location);
 
         curl_setopt($this->link(), CURLOPT_URL, $location);
         curl_setopt($this->link(), CURLOPT_PROXY, $this->proxy);
@@ -82,6 +78,7 @@ class Curl extends \MeshMVC\Storage {
         }
 
         curl_close($this->link());
+        $this->performance_end();
         return $output;
     }
 

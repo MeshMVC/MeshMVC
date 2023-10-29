@@ -37,6 +37,7 @@ class MySQL extends \MeshMVC\Storage {
 
     // Bulk Insert with $table, $rows, $defs
     public function upload($location, $data, $operation = "write") : self {
+        $this->performance_start();
         $table = $location;
         $rows = $data;
         $defs = $operation;
@@ -63,10 +64,12 @@ class MySQL extends \MeshMVC\Storage {
         $sql .= ");";
 
         $this->query($sql, $types, ...$rows);
+        $this->performance_end();
         return $this;
     }
 
     public function query($query) : array {
+        $this->performance_start();
         // init vars
         $args = func_get_args();
         $query = array_shift($args);
@@ -92,6 +95,7 @@ class MySQL extends \MeshMVC\Storage {
         while (($results != null) && ($row = $results->fetch_array(MYSQLI_BOTH))) {
             $ret[] = $row;
         }
+        $this->performance_end();
         return $ret;
     }
 

@@ -4,6 +4,7 @@ namespace MeshMVC;
 
 abstract class Storage {
 
+    private $performance = null;
     private mixed $link = null;
     private mixed $bulk_failed = false;
 
@@ -22,6 +23,19 @@ abstract class Storage {
         return $this->connect(...$args);
     }
 
+    public function performance() {
+        return $this->performance;
+    }
+    public function performance_start() : self {
+        $this->performance = microtime(true);
+        return $this;
+    }
+
+    public function performance_end() : self {
+        $this->performance = microtime(true) - $this->performance;
+        return $this;
+    }
+
     public function link($link = null) : mixed {
         if (empty($link)) return $this->link;
         $this->link = $link;
@@ -36,6 +50,15 @@ abstract class Storage {
 
     public function export($storage_alias, $location) {
         file_put_contents($location, \MeshMVC\Cross::storage($storage_alias)->download());
+    }
+
+    public static function prefix_download(&$url) {
+        if (str_starts_with($url, "/")) {
+            $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+            $domainName = $_SERVER['HTTP_HOST'];
+            $baseUrl = $protocol . $domainName;
+            $url = $baseUrl.$url;
+        }
     }
 
 }

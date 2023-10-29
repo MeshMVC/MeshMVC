@@ -13,7 +13,8 @@ class _openapi_tag_test extends \MeshMVC\Controller {
 
         // Load main application Schema
         $json = view("text")
-            ->from("/webapp/packages/custom/openapi.json")
+            ->from("/packages/custom/openapi.json")
+            ->storage("curl")
             ->toString();
 
         // set request url in app schema
@@ -32,7 +33,7 @@ class _openapi_tag_test extends \MeshMVC\Controller {
 
         // load schema to test
         $json = view("json")
-            ->from("/webapp/packages/custom/tag.json")
+            ->from("/packages/custom/tag.json")
             ->by("replace")
             ->to("components.schemas.test")
             ->parse($json);
@@ -62,7 +63,7 @@ class _openapi_cname_test extends \MeshMVC\Controller {
 
         // Load main application Schema
         $json = view("text")
-            ->from("/webapp/packages/custom/openapi.json")
+            ->from("/packages/custom/openapi.json")
             ->toString();
 
         // set request url in app schema
@@ -81,7 +82,7 @@ class _openapi_cname_test extends \MeshMVC\Controller {
 
         // load schema to test
         $json = view("json")
-            ->from("/webapp/packages/custom/contact_name.json")
+            ->from("/packages/custom/contact_name.json")
             ->by("replace")
             ->to("components.schemas.test")
             ->parse($json);

@@ -48,6 +48,7 @@ class SFTP extends \MeshMVC\Storage {
     }
 
     public function upload($location, $data, $operation = "write") : self {
+        $this->performance_start();
         try {
             $sftp = ssh2_sftp($this->link());
             $sftpStream = @fopen('ssh2.sftp://' . $sftp . $location, substr($operation, 0, 1));
@@ -58,25 +59,33 @@ class SFTP extends \MeshMVC\Storage {
                 throw new Exception("Could not send data.");
             }
         } catch (\Exception $e) {
-            throw new \Exception('Exception: ' . $e->getMessage());
+
         } finally {
             fclose($sftpStream);
         }
+        $this->performance_end();
         return $this;
     }
     public function download($location) : mixed {
+
+        $output = null;
+        $this->performance_start();
+
         try {
             $sftp = ssh2_sftp($this->link());
             $sftpStream = @fopen('ssh2.sftp://' . $sftp . $location, 'r');
             if (!$sftpStream) {
                 throw new Exception("Could not open remote file: $location");
             }
-            return stream_get_contents($sftpStream);
+            $output = stream_get_contents($sftpStream);
         } catch (\Exception $e) {
-            throw new \Exception('Exception: ' . $e->getMessage());
+
         } finally {
             fclose($sftpStream);
         }
+
+        $this->performance_end();
+        return $output;
     }
 
     public function query($query) : self {

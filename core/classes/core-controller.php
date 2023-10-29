@@ -15,6 +15,8 @@ namespace MeshMVC;
 
 		public $needed_controllers = [];
 
+        public $index = null;
+
         public function __construct() {
             \MeshMVC\Cross::$currentController = $this;
         }
