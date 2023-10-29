@@ -1,7 +1,5 @@
 <?php
-
 namespace MeshMVC;
-
 	class Database {
 		static private $dbtype;
 		static private $dblink;

@@ -16,6 +16,7 @@
 	// Includes
 	require_once PATH."core/classes/core-logger.php";
 	require_once PATH."core/classes/core-tools.php";
+    require_once PATH."core/classes/core-config.php";
 
 	// Configs
 	require_once PATH."core/classes/core-load-configs.php";
@@ -29,15 +30,19 @@
 	require_once PATH."core/classes/core-models.php";
 	require_once PATH."core/classes/core-cross.php"; @new \MeshMvc\Cross();
 
+    // Storage
+    require_once PATH."core/classes/core-storage.php";
+    foreach (glob(PATH . "core/classes/core-storage-*.php") as $filename) {
+        require_once $filename;
+    }
+
     // Views
 	require_once PATH."core/classes/core-view.php";
-    require_once PATH."core/classes/core-view-gql.php";
-    require_once PATH."core/classes/core-view-html.php";
-    require_once PATH."core/classes/core-view-json.php";
-    require_once PATH."core/classes/core-view-text.php";
-    require_once PATH."core/classes/core-view-openapi.php";
+    foreach (glob(PATH . "core/classes/core-view-*.php") as $filename) {
+        require_once $filename;
+    }
 
-	require_once PATH."core/classes/core-controller.php";
+    require_once PATH."core/classes/core-controller.php";
 	require_once PATH."core/classes/core-shortcuts.php";
 
 	// Execution queue start

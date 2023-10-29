@@ -19,7 +19,6 @@
     "justinrainbow/json-schema": "^5",
     "league/openapi-psr7-validator": "0.21",
     "cebe/php-openapi": "^1.7"
-
   },
   "config": {
     "vendor-dir": "./www/core/lib"

@@ -7,12 +7,20 @@ namespace MeshMVC;
 	    public static $currentController = null;
 	    public static $currentView = null;
         public static $models = null;
+
+        // TODO: automate these values
         public static $viewTypes = [
             "gql" => \MeshMVC\Views\Gql::class,
             "html" => \MeshMVC\Views\Html::class,
             "json" => \MeshMVC\Views\Json::class,
             "text" => \MeshMVC\Views\Text::class,
             "openapi" => \MeshMVC\Views\OpenAPI::class,
+        ];
+
+        // TODO: automate these values
+        public static $storageTypes = [
+            "local" => \MeshMVC\StorageTypes\Local::class,
+            "sftp" => \MeshMVC\StorageTypes\SFTP::class,
         ];
 
         public function __construct() {

@@ -101,9 +101,6 @@ namespace MeshMVC;
 		public function requires($controller_list) {
 			return $this->needs($controller_list);
 		}
-		public function view($from) {
-			return new \MeshMVC\View($from);
-		}
 		public function Group() {
 			return new \MeshMVC\Model();
 		}
