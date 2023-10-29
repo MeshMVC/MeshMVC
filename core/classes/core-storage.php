@@ -34,4 +34,8 @@ abstract class Storage {
         return $this;
     }
 
+    public function export($storage_alias, $location) {
+        file_put_contents($location, \MeshMVC\Cross::storage($storage_alias)->download());
+    }
+
 }

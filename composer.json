@@ -2,6 +2,9 @@
   "name": "meshmvc/meshmvc",
 
   "require": {
+
+    "symfony/yaml": "^6.3",
+
     "marcj/topsort": "^2.0",
     "mtdowling/jmespath.php": "^2.7",
     "halaxa/json-machine": "^1.1",
@@ -21,6 +24,6 @@
     "cebe/php-openapi": "^1.7"
   },
   "config": {
-    "vendor-dir": "./www/core/lib"
+    "vendor-dir": "./core/lib"
   }
 }

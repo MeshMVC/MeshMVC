@@ -20,12 +20,8 @@ class Json extends View {
         if ($from == "") throw new \Exception("No view template specified!");
 
         if (is_string($from) && (str_starts_with($from, "/") || \MeshMVC\Tools::is_url($from))) {
-            try {
-                $processed_output = \MeshMVC\Tools::download($from);
-            } catch (\Exception $e) {
-                // TODO: custom callback option
-                throw new \Exception("Couldn't fetch URL: " . $from, 0, $e);
-            }
+            if (empty($this->storage)) throw new \Exception("No storage set on this view.");
+            $processed_output = $this->storage->download($from);
         } elseif (is_object($from) && in_array('MeshMVC\Model', class_parents($from), true)) {
             $processed_output = $from->json();
         } else {

@@ -14,12 +14,14 @@ class Local extends \MeshMVC\Storage {
     public function connect() : self {
         // TODO: (optional) mount in File System?
         // do nothing.
+        return $this;
     }
 
     // required by abstract class
     public function disconnect() : self {
         // TODO: (optional) unmount in File System?
-        throw new \Exception("No connection possible.");
+        // do nothing.
+        return $this;
     }
 
     public function upload($location, $data, $operation="") : self {

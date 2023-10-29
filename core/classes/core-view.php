@@ -6,6 +6,8 @@ use GraphQL;
 	// Core Controller class for all controller objects to extend
 	abstract class View {
 
+        public $storage = null;
+
 		public $from = ''; 	// from template
         public $filter = '';
         public $trim = '';
@@ -22,6 +24,7 @@ use GraphQL;
         // constructor requires filename of view
         public function __construct() {
             \MeshMVC\Cross::$currentView = $this;
+            $this->storage($_ENV["config"]["default_storage"]);
 			return $this;
         }
 
@@ -107,5 +110,12 @@ use GraphQL;
 			$this->use_models = $use_models;
 			return $this;
 		}
+
+        public function storage($alias) {
+            \MeshMVC\Cross::$currentView = $this;
+            if (empty($alias)) return $this->storage;
+            $this->storage = storage($alias);
+            return $this;
+        }
 
 	}

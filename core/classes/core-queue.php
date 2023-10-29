@@ -3,8 +3,7 @@
     use GraphQL\GraphQL;
 
     // include core libs
-	require_once(PATH . 'core/lib/phpquery/phpQuery-onefile.php');
-	require_once(PATH . "core/lib/autoload.php");
+	require_once($_ENV["PATH"] . 'core/lib/phpquery/phpQuery-onefile.php');
 
 	class Queue {
 		public static $complete_output = "";
@@ -20,21 +19,18 @@
             $paths_to_load = [];
 
             // Search for all files within the seeded directories
-            foreach (\MeshMVC\Environment::$SEEDS as $dir) {
+            foreach ($_ENV["config"]["seeds"] as $dir) {
                 [$seed_type, $seeded_path] = explode(":", $dir);
                 if ($seed_type === "controller" || $seed_type === "view") {
                     $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));
                 }
             }
-
             // Remove duplicates from the paths to load
             $paths_to_load = array_unique($paths_to_load);
 
             // Include each path
             foreach ($paths_to_load as $path) {
-                if ($path) {
-                    include $path;
-                }
+                require_once $path;
             }
 
             // Get the custom classes by slicing the declared classes array
@@ -59,7 +55,7 @@
             $headed = $doc["html head"]->length;
 
             if ($headed) {
-                foreach (\MeshMVC\Environment::$SEEDS as $dir) {
+                foreach ($_ENV["config"]["seeds"] as $dir) {
                     [$seed_type, $seeded_path] = explode(":", $dir);
 
                     if ($seed_type === "css" || $seed_type === "js") {
@@ -98,7 +94,7 @@
             $priority_controllers = [];
 
             // ensure all unit tests pass when debugging
-            if (\MeshMVC\Environment::DEBUG) {
+            if ($_ENV["config"]["debug"]) {
                 $unit_tests_failed = false;
                 foreach ($this->obj_controllers as $cname => $controller) {
                     if (method_exists($controller, 'test')) {
@@ -143,7 +139,7 @@
 
             //debug($priority_controllers);
             // sort controllers by highest priority to lowest
-            uasort($priority_controllers, '\MeshMVC\Tools::prioritySorter');
+            uasort($priority_controllers, 'MeshMVC\Tools::prioritySorter');
             //debug($priority_controllers);
 
             // prevent infinite loops & dependencies to controllers that don't exist
@@ -196,6 +192,17 @@
             }
 
             echo self::output();
+
+            // disconnect all storages
+            foreach (\MeshMVC\Cross::storage("all") as $id => $storage) {
+                try {
+                    $storage->disconnect();
+                } catch(\Exception $e) {
+                    if ($_ENV["config"]["debug"]) {
+                        debug("Failed to disconnect storage[" . $id . "]");
+                    }
+                }
+            }
         }
 	
 	}

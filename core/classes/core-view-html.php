@@ -30,16 +30,12 @@ class Html extends View {
         if ($from == "") throw new \Exception("No view template specified!");
 
         if (str_starts_with($from, "/") || \MeshMVC\Tools::is_url($from)) {
-            try {
-                $processed_output = \MeshMVC\Tools::download($from);
-            } catch (\Exception $e) {
-                // TODO: custom callback option
-                throw new \Exception("Couldn't fetch URL: " . $from, 0, $e);
-            }
+            if (empty($this->storage)) throw new \Exception("No storage set on this view.");
+            $processed_output = $this->storage->download($from);
         } else {
             // find all views
             $paths_to_load = [];
-            foreach (\MeshMVC\Environment::$SEEDS as $dir) {
+            foreach ($_ENV["config"]["seeds"] as $dir) {
                 [$seed_type, $seeded_path] = explode(":", $dir);
                 if ($seed_type === "template") {
                     $paths_to_load = array_merge($paths_to_load, \MeshMVC\Tools::search_files($seeded_path));

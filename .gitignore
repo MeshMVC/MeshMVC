@@ -13,5 +13,4 @@ yarn-debug.log*
 yarn-error.log*
 .idea*
 .vscode
-www/config/*.env.php
-www/core/lib
+core/lib

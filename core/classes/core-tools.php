@@ -8,6 +8,15 @@ use \JmesPath\Env as JmesPath;
 
         private static $rawInput = null;
 
+        public static function create_storage($alias) : \MeshMVC\Storage {
+            $props = $_ENV["config"]["storage"][$alias];
+            foreach ($props as $prop) {
+                var_dump($prop);
+            }
+
+
+        }
+
         public static function is_url($url) {
             return filter_var($url, FILTER_VALIDATE_URL);
         }
@@ -29,51 +38,6 @@ use \JmesPath\Env as JmesPath;
             // TODO
             $user = new \MeshMVC\User();
             return $user->access($access_level);
-        }
-
-        public static function download($url, $proxy = null)  {
-
-            // fix relative urls to absolute urls to this server
-            if (str_starts_with($url, "/")) {
-                $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-                $domainName = $_SERVER['HTTP_HOST'];
-                $baseUrl = $protocol . $domainName;
-                $url = $baseUrl.$url;
-            }
-
-            if ($proxy == null) {
-                return file_get_contents($url);
-            }
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_PROXY, $proxy);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_USERAGENT, \MeshMVC\Environment::DEFAULT_PROXY_AGENT);
-            curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-            if (\MeshMVC\Environment::DEFAULT_PROXY_TIMEOUT_MS != null) {
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, \MeshMVC\Environment::DEFAULT_PROXY_TIMEOUT_MS);
-            }
-
-            $output = curl_exec($ch);
-
-            /*
-            // get proxy errors
-            if (curl_getinfo($ch, CURLINFO_PROXY_ERROR) != CURLPX_OK) {
-                throw new \Exception("Proxy(".CURLOPT_PROXY.") error downloading: ".$url);
-            }
-            */
-
-            // get response code to ensure
-            if (\MeshMVC\Environment::DEFAULT_PROXY_VALIDATE_RESPONSE_CODES) {
-                $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-                if ($code != 200) throw new \Exception($code . " error downloading: " . $url);
-            }
-
-            curl_close($ch);
-            return $output;
         }
 
         // q(number) = query argument (starts with 0)
@@ -155,9 +119,9 @@ use \JmesPath\Env as JmesPath;
         }
 
         // write to logs
-        public static function note($data)
+        public static function log($data)
         {
-            $log_file = \MeshMVC\Environment::LOG_FILE;
+            $log_file = $_ENV["PATH"].$_ENV["config"]["logger"];
             if ($fh = fopen($log_file, 'a')) {
                 fwrite($fh, $data . PHP_EOL);
                 fclose($fh);
@@ -213,7 +177,7 @@ use \JmesPath\Env as JmesPath;
 
         public static function email($to, $subject, $message)
         {
-            $from = \MeshMVC\Environment::SITE_NAME . " <noreply@" . $_SERVER["SERVER_NAME"] . ".com>";
+            $from = $_ENV["config"]["site_name"] . " <noreply@" . $_SERVER["SERVER_NAME"] . ".com>";
 
             $headers = array(
                 "From" => $from,
@@ -254,8 +218,7 @@ use \JmesPath\Env as JmesPath;
             return substr($haystack, -$length) === $needle;
         }
 
-        public static function search_files($pattern, $flags = 0)
-        {
+        public static function search_files($pattern, $flags = 0) {
             $files = glob($pattern, $flags);
 
             foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
@@ -265,10 +228,9 @@ use \JmesPath\Env as JmesPath;
             return $files;
         }
 
-        private static function search_files_matching_helper($filename, $dir, &$results = [])
-        {
-            $files = glob($dir);
+        private static function search_files_matching_helper($filename, $dir, &$results = [])  {
 
+            $files = glob($dir);
             foreach ($files as $current_file) {
                 if (!is_dir($current_file)) {
                     $current_filename = strtolower(basename($current_file));

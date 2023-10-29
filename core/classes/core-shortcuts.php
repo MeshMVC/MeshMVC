@@ -2,11 +2,30 @@
 	/* This file contains shortcuts to functions and classes within namespaces */
 
     function debug($obj) {
-        if (\MeshMVC\Environment::DEBUG) {
+        if ($_ENV["config"]["debug"]) {
             echo "<pre style='color: #333; font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; font-size:14px;'>";
             var_dump($obj);
             echo "</pre>";
         }
+    }
+
+    function storage($alias) : mixed {
+        if ($alias === "all") return \MeshMVC\Cross::$storage;
+
+        $storageConfig = $_ENV["config"]["storage"][$alias];
+        $id = array_key_first($storageConfig);
+        $props = [];
+        if (!empty($storageConfig)) {
+            foreach (array_values($storageConfig) as $prop) {
+                if (!empty($prop) && is_array($prop)) {
+                    $props[] = array_values($prop)[0];
+                }
+            }
+        }
+
+        $storage = \MeshMVC\Cross::storage($alias, new \MeshMVC\Cross::$storageTypes[$id]);
+        $storage->connect(...$props);
+        return $storage;
     }
 
 	// query access
