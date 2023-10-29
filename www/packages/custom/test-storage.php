@@ -10,6 +10,8 @@ class _Storage_Test extends \MeshMVC\Controller {
 
     function run() {
 
+        phpinfo();
+
         storage("sftp")
             ->upload("myfile.txt", "test-output");
 
