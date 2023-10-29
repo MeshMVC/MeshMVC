@@ -1,5 +1,7 @@
 <?php
 
+namespace myapp;
+
 class _text_test extends \MeshMVC\Controller {
 
     function sign() {

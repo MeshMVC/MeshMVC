@@ -6,7 +6,14 @@ use \MeshMVC\View;
 // Core Controller class for all controller objects to extend
 class Html extends View {
 
-    public function parse($previousOutput = "") : string {
+    private $fix_links = false;
+
+    public function fixLinks($value = true) {
+        $this->fix_links = $value;
+        return $this;
+    }
+
+    public function preparse($previousOutput = "") : string {
         $from = $this->from;
         $filter = $this->filter;
         $trim = $this->trim;
@@ -120,5 +127,25 @@ class Html extends View {
 
         // using wrapper hack to get outerHTML
         return $destination;
+    }
+
+    public function parse($previousOutput = "") : string {
+        $parsed = $this->preparse($previousOutput);
+
+        if (\MeshMVC\Tools::is_url($this->from) && isset($this->fix_links)) {
+
+            // replace links that start with / to link to right domain
+            $baseUrl = parse_url($this->from, PHP_URL_SCHEME) . '://' . parse_url($this->from, PHP_URL_HOST);
+            $parsed = \phpQuery::newDocumentHTML($parsed);
+            $nodes = $parsed["*[href]"]->get();
+            foreach ($nodes as $node) {
+                $attrs = $node->attributes;
+                $href = $attrs->getNamedItem("href");
+                $href->nodeValue = !\MeshMVC\Tools::is_url($href->nodeValue) ? $baseUrl . $href->nodeValue : $href->nodeValue;
+            }
+
+        }
+
+        return $parsed;
     }
 }

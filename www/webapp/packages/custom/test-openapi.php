@@ -1,5 +1,7 @@
 <?php
 
+namespace myapp;
+
 // Schema validator for openapi v3
 class _openapi_tag_test extends \MeshMVC\Controller {
 

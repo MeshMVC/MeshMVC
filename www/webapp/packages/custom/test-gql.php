@@ -1,5 +1,7 @@
 <?php
 
+namespace myapp;
+
 class _GQL extends \MeshMVC\Controller {
 
     // test with POST body: {"query": "query { echo(message: \"Hello World\") }" }

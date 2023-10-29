@@ -1,5 +1,7 @@
 <?php
 
+namespace myapp;
+
 class SimpleModel extends \MeshMVC\Model {
     public $zzz = "zzz";
     public $test1 = "value1";

@@ -51,8 +51,8 @@
             }
         }
 
-        public static function output()
-        {
+        // TODO: move this function to a core module
+        public static function output()  {
             $paths_to_load = [];
 
             $doc = \phpQuery::newDocumentHTML(self::$complete_output);

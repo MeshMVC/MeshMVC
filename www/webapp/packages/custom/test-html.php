@@ -1,7 +1,7 @@
 <?php
 
 // TODO: fix apps with namespaces
-// namespace namespace_test
+namespace myapp;
 
 // HTML skeleton controller:
 class _html extends \MeshMVC\Controller {
@@ -23,7 +23,7 @@ class Page extends \MeshMVC\Model {
 // (multiple controllers can fire for the same page/route/api)
 class _page_components extends \MeshMVC\Controller {
     function sign() {
-        return route("/html/*") && needs("_html");
+        return route("/html/*") && needs("myapp\_html");
     }
     function run() {
         model("page", new Page());
@@ -37,7 +37,7 @@ class _page_components extends \MeshMVC\Controller {
 // Homepage controller:
 class _home extends \MeshMVC\Controller {
     function sign() {
-        return route("/html/home") && needs("_page_components"); // _html controller class dependency
+        return route("/html/home") && needs("myapp\_page_components"); // _html controller class dependency
     }
     function run() {
         view("html")
@@ -49,13 +49,13 @@ class _home extends \MeshMVC\Controller {
 class _resume extends \MeshMVC\Controller {
 
     function sign() {
-        return route("/html/resume") && needs("_page_components"); // _html controller class dependency
+        return route("/html/resume") && needs("myapp\_page_components"); // _html controller class dependency
     }
     function run() {
         view("html")
             ->from("https://luclaverdure.com")
+            ->fixLinks()
             ->filter("#history p:eq(0)")
-
             ->to("html body"); // appends page contents to document body
         // TODO: fix relative links
     }

@@ -16,8 +16,7 @@
 	function access($access_required) {
 		return \MeshMVC\Tools::access($access_required);
 	}
-	
-	
+
 	// query url
 	function q($argNumber_or_inPathString = 'all') {
 		return \MeshMVC\Tools::queryURL($argNumber_or_inPathString);
