@@ -99,9 +99,9 @@ use GraphQL;
 		}
 		// HTML: inner, prepend, replace, append (default)
         // JSON: prepend, append, replace, merge (default)
-		public function by($display_mode) {
+		public function by($merge_mode) {
             \MeshMVC\Cross::$currentView = $this;
-			$this->display_mode = $display_mode;
+			$this->display_mode = $merge_mode;
 			return $this;
 		}
 		// use models in templates

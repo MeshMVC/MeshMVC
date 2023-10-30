@@ -7,6 +7,7 @@ abstract class Storage {
     private $performance = null;
     private mixed $link = null;
     private mixed $bulk_failed = false;
+    private $options = [];
 
     abstract function connect() : self;
     abstract function disconnect() : self;
@@ -48,8 +49,21 @@ abstract class Storage {
         return $this;
     }
 
-    public function export($storage_alias, $location) {
-        file_put_contents($location, \MeshMVC\Cross::storage($storage_alias)->download());
+    public function option($name, $value=null) : mixed {
+        if (empty($value)) return $this->options[$name];
+        $this->options[$name] = $value;
+        return $this;
+    }
+
+    public function opt($name, $value=null) : mixed {
+        $this->option($name, $value);
+        return $this;
+    }
+
+    public function export($input_alias, $input_location, $output_alias, $output_location) {
+        $this->performance_start();
+        storage($output_alias)->upload($output_location, storage($input_alias)->download($input_location));
+        $this->performance_end();
     }
 
     public static function prefix_download(&$url) {

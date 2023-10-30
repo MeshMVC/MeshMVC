@@ -9,7 +9,10 @@
         }
     }
 
-    function storage($alias) : mixed {
+    $default_storage = $_ENV["config"]["default_storage"];
+    function storage($alias = null) : mixed {
+        global $default_storage;
+        if (empty($alias)) $alias = $default_storage;
         if ($alias === "all") return \MeshMVC\Cross::$storage;
 
         $storageConfig = $_ENV["config"]["storage"][$alias];

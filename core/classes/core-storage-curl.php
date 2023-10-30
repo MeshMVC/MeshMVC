@@ -30,10 +30,6 @@ class Curl extends \MeshMVC\Storage {
         throw new \Exception("curl can only download.");
     }
 
-    public function option($option, $value) {
-        curl_setopt($this->link(), $option, $value);
-    }
-
     public function agent($agentString) : self {
         $this->agentString = $agentString;
         return $this;
@@ -59,6 +55,10 @@ class Curl extends \MeshMVC\Storage {
         curl_setopt($this->link(), CURLOPT_USERAGENT, $this->agentString);
         curl_setopt($this->link(), CURLOPT_AUTOREFERER, true);
         curl_setopt($this->link(), CURLOPT_FOLLOWLOCATION, true);
+
+        foreach ($this->option() as $option => $value) {
+            curl_setopt($this->link(), $option, $value);
+        }
 
         if ($this->timeoutMS != null) {
             curl_setopt($this->link(), CURLOPT_CONNECTTIMEOUT_MS, $this->timeoutMS);

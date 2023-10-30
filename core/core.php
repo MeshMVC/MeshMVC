@@ -1,5 +1,7 @@
 <?php
 
+    $_ENV["performance_start"] = microtime(true);
+
     // display core errors!
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
