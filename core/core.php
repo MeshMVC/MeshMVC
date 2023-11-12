@@ -23,29 +23,25 @@
 	// Configs
 	require_once $_ENV["PATH"]."core/classes/core-load-configs.php";
 
+    // shortcuts
+    require_once $_ENV["PATH"]."core/classes/core-shortcuts.php";
+
 	// routes (f=*, !q=*)
 	require_once $_ENV["PATH"]."core/classes/core-route.php";
 	
-	// MVC
-	require_once $_ENV["PATH"]."core/classes/core-db.php";
-	require_once $_ENV["PATH"]."core/classes/core-model.php";
-	require_once $_ENV["PATH"]."core/classes/core-models.php";
-	require_once $_ENV["PATH"]."core/classes/core-cross.php"; @new \MeshMvc\Cross();
+	// Class containers
+    require_once $_ENV["PATH"]."core/classes/core-models.php";
+	require_once $_ENV["PATH"]."core/classes/core-cross.php"; @new \MeshMvc\Cross(); // TODO: move into queue
 
-    // Storage
-    require_once $_ENV["PATH"]."core/classes/core-storage.php";
-    foreach (glob($_ENV["PATH"] . "core/classes/core-storage-*.php") as $filename) {
+    // Abstracts
+    foreach (glob($_ENV["PATH"] . "core/abstracts/*.php") as $filename) {
         require_once $filename;
     }
 
-    // Views
-	require_once $_ENV["PATH"]."core/classes/core-view.php";
-    foreach (glob($_ENV["PATH"] . "core/classes/core-view-*.php") as $filename) {
+    // Abstract Extensions
+    foreach (glob($_ENV["PATH"] . "core/seeded/*/*.php") as $filename) {
         require_once $filename;
     }
-
-    require_once $_ENV["PATH"]."core/classes/core-controller.php";
-	require_once $_ENV["PATH"]."core/classes/core-shortcuts.php";
 
 	// Execution queue start
 	require_once $_ENV["PATH"]."core/classes/core-queue.php";

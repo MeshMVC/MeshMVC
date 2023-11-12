@@ -1,5 +1,6 @@
 {
   "name": "meshmvc/meshmvc",
+  "description": "Simple Framework For PHP",
 
   "require": {
 

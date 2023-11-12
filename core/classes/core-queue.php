@@ -1,6 +1,5 @@
 <?php
 	namespace MeshMVC;
-    use GraphQL\GraphQL;
 
     // include core libs
 	require_once($_ENV["PATH"] . 'core/lib/phpquery/phpQuery-onefile.php');
@@ -204,6 +203,7 @@
                 }
             }
 
+            // TODO: load path from environment config
             $access_log = $_ENV["PATH"]."logs/access.log";
             $time = microtime(true) - $_ENV["performance_start"];
             // TODO: Add remote IP, date and time, auth info, DB queries

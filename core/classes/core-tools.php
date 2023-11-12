@@ -1,9 +1,9 @@
 <?php
 
 namespace MeshMVC;
-use \JmesPath\Env as JmesPath;
+use JmesPath\Env as JmesPath;
 
-	class Tools
+class Tools
     {
 
         private static $rawInput = null;
