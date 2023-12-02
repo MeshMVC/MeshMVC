@@ -26,7 +26,7 @@
             }
         }
 
-        $storage = \MeshMVC\Cross::storage($alias, new \MeshMVC\Cross::$storageTypes[$id]);
+        $storage = \MeshMVC\Cross::storage($alias, new \MeshMVC\Mesh(new \MeshMVC\Cross::$storageTypes[$id]));
         $storage->connect(...$props);
         return $storage;
     }
@@ -78,16 +78,17 @@
 		return \MeshMVC\Tools::translate($translate_string_id);
 	}
 
-	/**
-	 * Creates a view
-	 * @link https://meshmvc.com/????
-	 * @param mixed $object <p>
-	 * Filename, basename or url of template to be fetched, OR Model instance for APIs.
-	 * </p>
-	 * @return \MeshMVC\View returns current View (Chainable with Fluent Interface)
-	 */
+/**
+ * Creates a view
+ * @link https://meshmvc.com/????
+ * @param mixed $object <p>
+ * Filename, basename or url of template to be fetched, OR Model instance for APIs.
+ * </p>
+ * @return \MeshMVC\View returns current View (Chainable with Fluent Interface)
+ * @throws Exception
+ */
 	function view($type) {
-        \MeshMVC\Cross::$currentController->addView(new \MeshMVC\Cross::$viewTypes[$type]);
+        \MeshMVC\Cross::$currentController->addView(new \MeshMVC\Mesh(new \MeshMVC\Cross::$viewTypes[$type]));
 		return \MeshMVC\Cross::$currentView;
 	}
 

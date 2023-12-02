@@ -58,6 +58,10 @@ abstract class Storage {
         return $this;
     }
 
+    public function options() : array {
+        return $this->options;
+    }
+
     public function opt($name, $value=null) : mixed {
         return $this->option($name, $value);
     }

@@ -38,7 +38,7 @@
             // Instantiate each controller found (identified by class extended from Controller)
             foreach ($custom_classes as $class) {
                 if (in_array('MeshMVC\Controller', class_parents($class), true)) {
-                    $this->obj_controllers[$class] = new $class;
+                    $this->obj_controllers[$class] = new \MeshMVC\Mesh(new $class);
                 }
                 if (in_array('MeshMVC\View', class_parents($class), true)) {
                     Cross::$viewTypes[strtolower($class)] = $class::class;
@@ -117,21 +117,17 @@
                 }
             }
 
-            // ensure controllers validate when a validation function is found
+            // ensure controllers validate when a signature function is found
             foreach ($this->obj_controllers as $cname => $controller) {
-                if (method_exists($controller, 'sign')) {
-                    \MeshMVC\Cross::$currentController = $controller;
-                    $validator_priority = $controller->sign();
-                    if ($validator_priority !== false) {
-                        // when controller validates
-                        $validator_priority = is_numeric($validator_priority) ? $validator_priority : 0;
+                \MeshMVC\Cross::$currentController = $controller;
+                $validator_priority = $controller->sign();
+                if ($validator_priority !== false) {
+                    // when controller validates
+                    $validator_priority = is_numeric($validator_priority) ? $validator_priority : 0;
 
-                        $priority_controllers[$cname] = $validator_priority;
-                    } else {
-                        // free resources and invalidate obj
-                        $this->obj_controllers[$cname] = null;
-                    }
+                    $priority_controllers[$cname] = $validator_priority;
                 } else {
+                    // free resources and invalidate obj
                     $this->obj_controllers[$cname] = null;
                 }
             }
@@ -175,16 +171,13 @@
                     $controller = $this->obj_controllers[$cname];
                     $controller->index = $controller_index++;
 
-                    // execute if executable is found
-                    if (method_exists($controller, 'run')) {
-                        \MeshMVC\Cross::$currentController = $controller;
-                        $controller->run();
+                    \MeshMVC\Cross::$currentController = $controller;
+                    @$controller->run();
 
-                        // render each queued views
-                        foreach ($controller->loaded_views as $view) {
-                            if ($view->doRenderOnDestruct) {
-                                self::$complete_output = $view->parse(self::$complete_output);
-                            }
+                    // render each queued views
+                    foreach ($controller->loaded_views as $view) {
+                        if ($view->doRenderOnDestruct) {
+                            self::$complete_output = $view->parse(self::$complete_output);
                         }
                     }
                 }

@@ -14,10 +14,10 @@ class _Storage_Test extends \MeshMVC\Controller {
 
         $micro = storage("curl");
         $micro->download("https://luclaverdure.com/");
-        debug("curl :".$micro->performance());
+        debug("curl :".$micro->performance_pop());
         $micro = storage("fs");
         $micro->download("https://luclaverdure.com/");
-        debug("fs :".$micro->performance());
+        debug("fs :".$micro->performance_pop());
 
         // debug("Upload Performance:");
         // debug(storage("sftp")->upload("myfile.txt", "test-output")->performance());

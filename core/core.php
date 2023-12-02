@@ -32,6 +32,9 @@
     require_once $_ENV["PATH"]."core/classes/models.php";
 	require_once $_ENV["PATH"]."core/classes/cross.php"; @new \MeshMvc\Cross(); // TODO: move into queue
 
+    // proxies (mesh)
+    require_once $_ENV["PATH"]."core/proxies/mesh.php";
+
     // Abstracts
     foreach (glob($_ENV["PATH"] . "core/abstracts/*.php") as $filename) {
         require_once $filename;

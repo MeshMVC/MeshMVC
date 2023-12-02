@@ -54,7 +54,7 @@ class Curl extends \MeshMVC\Storage {
         curl_setopt($this->link(), CURLOPT_AUTOREFERER, true);
         curl_setopt($this->link(), CURLOPT_FOLLOWLOCATION, true);
 
-        foreach ($this->option() as $option => $value) {
+        foreach ($this->options() as $option => $value) {
             curl_setopt($this->link(), $option, $value);
         }
 
