@@ -103,30 +103,12 @@ namespace MeshMVC;
 		public function requires($controller_list) {
 			return $this->needs($controller_list);
 		}
-		public function Group() {
-			return new \MeshMVC\Model();
-		}
-		public function Table() {
-			return new \MeshMVC\Model();
-		}
-		public function Matrix() {
-			return new \MeshMVC\Model();
-		}
 
 		// Misc Shortcuts
-		public function note($log) {
-			\MeshMVC\Tools::note($log);
-		}
 		public function q($arg) {
 			\MeshMVC\Tools::queryURL($arg);
 		}
 		public function route($arg) {
 			\MeshMVC\Tools::queryURL($arg);
-		}
-		public function a($arg) {
-			\MeshMVC\Tools::access($arg);
-		}
-		public function access($arg) {
-			\MeshMVC\Tools::access($arg);
 		}
 	}

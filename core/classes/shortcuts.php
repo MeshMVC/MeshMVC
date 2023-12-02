@@ -145,25 +145,6 @@
 		@\MeshMVC\Cross::$models->add($name, $instance);
 	}
 
-	// Model Group obj
-	function models() {
-		return new \MeshMVC\Models();
-	}
-	function group() {
-		return new \MeshMVC\Models();
-	}
-	function table() {
-		return new \MeshMVC\Models();
-	}
-	function matrix() {
-		return new \MeshMVC\Models();
-	}
-
-	// Database wrapper
-	function db($query) {
-		return new \MeshMVC\Database($query);
-	}
-
 	function posted($arg) {
 		return \MeshMVC\Tools::Posted($arg);
 	}

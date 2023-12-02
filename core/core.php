@@ -16,22 +16,21 @@
     $_ENV["PATH"] = realpath($_SERVER["DOCUMENT_ROOT"]."/../")."/";
 
 	// Includes
-	require_once $_ENV["PATH"]."core/classes/core-logger.php";
-	require_once $_ENV["PATH"]."core/classes/core-tools.php";
-    require_once $_ENV["PATH"]."core/classes/core-config.php";
+	require_once $_ENV["PATH"]."core/classes/tools.php";
+    require_once $_ENV["PATH"]."core/classes/config.php";
 
 	// Configs
-	require_once $_ENV["PATH"]."core/classes/core-load-configs.php";
+	require_once $_ENV["PATH"]."core/classes/load-configs.php";
 
     // shortcuts
-    require_once $_ENV["PATH"]."core/classes/core-shortcuts.php";
+    require_once $_ENV["PATH"]."core/classes/shortcuts.php";
 
 	// routes (f=*, !q=*)
-	require_once $_ENV["PATH"]."core/classes/core-route.php";
+	require_once $_ENV["PATH"]."core/classes/route.php";
 	
 	// Class containers
-    require_once $_ENV["PATH"]."core/classes/core-models.php";
-	require_once $_ENV["PATH"]."core/classes/core-cross.php"; @new \MeshMvc\Cross(); // TODO: move into queue
+    require_once $_ENV["PATH"]."core/classes/models.php";
+	require_once $_ENV["PATH"]."core/classes/cross.php"; @new \MeshMvc\Cross(); // TODO: move into queue
 
     // Abstracts
     foreach (glob($_ENV["PATH"] . "core/abstracts/*.php") as $filename) {
@@ -44,4 +43,4 @@
     }
 
 	// Execution queue start
-	require_once $_ENV["PATH"]."core/classes/core-queue.php";
+	require_once $_ENV["PATH"]."core/classes/queue.php";

@@ -29,7 +29,7 @@ class _page_components extends \MeshMVC\Controller {
 
         view("html")
             ->from("title.html")
-        ->to("html head"); // appends to body header element
+            ->to("html head"); // appends to body header element
     }
 }
 

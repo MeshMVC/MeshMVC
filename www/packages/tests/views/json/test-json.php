@@ -62,6 +62,7 @@ class _models_test extends \MeshMVC\Controller {
         die();
         */
 
+        // TODO: trim DIDN'T WORK!!!!
         view("json")
             ->from(new SimpleModel())// filter properties and methods for selected
             ->trim("test3"); // filter to remove properties and methods for selected

@@ -18,20 +18,6 @@ namespace MeshMVC;
             return $this;
 		}
 
-        // load model object from json string
-        public function load($name, $json) {
-            $this_model = new \MeshMVC\Model();
-
-            $data = json_decode($json);
-            foreach ($data as $prop => $value) {
-                if (!in_array($prop, $this_model::$class_methods) )
-                $this_model->__set($prop, $value);
-            }
-
-            $this->add($name, $this_model);
-            return $this;
-        }
-
         public function save($name, $filename) {
             self::$models[$name]->save($filename);
             return $this;
@@ -53,15 +39,6 @@ namespace MeshMVC;
 
         public static function get($name) {
             return self::$models[$name];
-        }
-
-        public static function json($withfunctions = true) {
-            $data = [];
-            foreach (self::$models as $name => $instance) {
-                $data = array_merge($data, json_decode($instance->json($withfunctions), true));
-            }
-
-            return json_encode($data, JSON_PRETTY_PRINT);
         }
 
     }
