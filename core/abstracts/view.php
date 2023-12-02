@@ -5,7 +5,7 @@ namespace MeshMVC;
 // Core Controller class for all controller objects to extend
 	abstract class View {
 
-        public \MeshMVC\Storage|null $storage = null;
+        public $storage = null;
 
 		public $from = ''; 	// from template
         public $filter = '';
