@@ -23,7 +23,6 @@ class Local extends \MeshMVC\Storage {
     }
 
     public function upload($location, $data, $operation="") : self {
-        $this->performance_start();
         if ($operation == "append") {
             $operation = FILE_APPEND;
         } else {
@@ -31,15 +30,12 @@ class Local extends \MeshMVC\Storage {
         }
 
         file_put_contents($location, $data, $operation);
-        $this->performance_end();
         return $this;
     }
 
     public function download($location) : mixed {
         $this->prefix_download($location);
-        $this->performance_start();
         $output = file_get_contents($location, true);
-        $this->performance_end();
         return $output;
     }
 

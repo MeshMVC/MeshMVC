@@ -27,19 +27,6 @@ abstract class Storage {
         return $this->connect(...$args);
     }
 
-    public function performance() {
-        return $this->performance;
-    }
-    public function performance_start() : self {
-        $this->performance = microtime(true);
-        return $this;
-    }
-
-    public function performance_end() : self {
-        $this->performance = microtime(true) - $this->performance;
-        return $this;
-    }
-
     public function link($link = null) : mixed {
         if (empty($link)) return $this->link;
         $this->link = $link;

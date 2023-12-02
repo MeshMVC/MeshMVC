@@ -44,7 +44,6 @@ class Curl extends \MeshMVC\Storage {
     }
 
     public function download($location) : mixed {
-        $this->performance_start();
         $this->prefix_download($location);
 
         curl_setopt($this->link(), CURLOPT_URL, $location);
@@ -76,7 +75,6 @@ class Curl extends \MeshMVC\Storage {
         }
 
         curl_close($this->link());
-        $this->performance_end();
         return $output;
     }
 

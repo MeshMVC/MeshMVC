@@ -11,7 +11,6 @@ class Zip extends \MeshMVC\Storage {
 
     // required by abstract class
     public function connect() : self {
-        $this->performance_start();
         $this->link(new ZipArchive());
         return $this;
     }
@@ -19,7 +18,6 @@ class Zip extends \MeshMVC\Storage {
     // required by abstract class
     public function disconnect() : self {
         $this->link()->close();
-        $this->performance_end();
         return $this;
     }
 
@@ -41,7 +39,6 @@ class Zip extends \MeshMVC\Storage {
 
     function bulk_start(): \MeshMVC\Storage {
         // TODO: start compression
-        $this->performance_start();
         $this->link(new ZipArchive());
         return $this;
     }

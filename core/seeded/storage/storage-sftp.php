@@ -46,7 +46,6 @@ class SFTP extends \MeshMVC\Storage {
     }
 
     public function upload($location, $data, $operation = "write") : self {
-        $this->performance_start();
         try {
             $sftp = ssh2_sftp($this->link());
             $sftpStream = @fopen('ssh2.sftp://' . $sftp . $location, substr($operation, 0, 1));
@@ -61,13 +60,11 @@ class SFTP extends \MeshMVC\Storage {
         } finally {
             fclose($sftpStream);
         }
-        $this->performance_end();
         return $this;
     }
     public function download($location) : mixed {
 
         $output = null;
-        $this->performance_start();
 
         try {
             $sftp = ssh2_sftp($this->link());
@@ -82,7 +79,6 @@ class SFTP extends \MeshMVC\Storage {
             fclose($sftpStream);
         }
 
-        $this->performance_end();
         return $output;
     }
 
