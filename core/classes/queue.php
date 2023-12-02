@@ -197,10 +197,10 @@
             }
 
             // TODO: load path from environment config
-            $access_log = $_ENV["PATH"]."logs/access.log";
+            $access_log = (substr($_ENV['config']['logs']['access_logs'], 0, 1) === '/') ? $_ENV['config']['logs']['access_logs'] : $_ENV['PATH'] . $_ENV['config']['logs']['access_logs'];
             $time = microtime(true) - $_ENV["performance_start"];
-            // TODO: Add remote IP, date and time, auth info, DB queries
-            storage()->upload($access_log, "200 (".method()."): ".\MeshMVC\Tools::queryURL()." - $time \n", "append");
+            $remote_ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? "(" . $_SERVER['HTTP_X_FORWARDED_FOR'] . ")" : "");
+            storage()->upload($access_log, "200 (".method()."): ".\MeshMVC\Tools::queryURL().", $time, $remote_ip \n", "append");
         }
 	
 	}

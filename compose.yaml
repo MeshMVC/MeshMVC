@@ -5,7 +5,9 @@ x-meshmvc:
   #output errors and prevent redirecting and displaying an error page
   debug: true
 
-  logger: logs/console.log
+  logs:
+    access_logs: "logs/access.log"
+    error_logs: "logs/errors.log"
 
   #REQUIRED: directories search patterns
   seeds:
