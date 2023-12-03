@@ -8,7 +8,7 @@ function usage {
   -u  alias of 'docker compose up -d'
   -d  alias of 'docker compose down'
   -e  set current yaml environment file
-  -c  clear caches
+  -c  clear caches and logs
   -l  lint webapp code"
 }
 
@@ -36,7 +36,9 @@ while getopts ":hudecl" opt; do
       # Clear cache
       shopt -s dotglob
       rm -rf cache/*
-      echo "Caches cleared."
+      echo "Clearing logs..."
+      rm -rf logs/*
+      echo "Caches and logs cleared."
       ;;
     l )
       echo "Linting..."

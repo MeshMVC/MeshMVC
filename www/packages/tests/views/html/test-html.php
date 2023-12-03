@@ -13,9 +13,13 @@ class _html extends \MeshMVC\Controller {
     }
 }
 
-class Page extends \MeshMVC\Model {
-    public static $title = "MeshMVC";
+class Page extends \MeshMVC\Models\HTML_Model {
+    public static $title = "";
     public static $user_id = 0;
+
+    public function __construct() {
+        $this::$title = $_ENV["config"]["site_name"];
+    }
 }
 
 // Page components controller to ensure controllers fire in order
