@@ -23,6 +23,18 @@ class Local extends \MeshMVC\Storage {
     }
 
     public function upload($location, $data, $operation="") : self {
+
+        $directory_path = dirname($location);
+
+        // Check if the directory does not exist.
+        if (!is_dir($directory_path)) {
+            // Attempt to create the directory.
+            if (!mkdir($directory_path, 0755, true)) {
+                throw new \Exception("Failed to create directories for file to write at: $location");
+            }
+        }
+
+
         if ($operation == "append") {
             $operation = FILE_APPEND;
         } else {
