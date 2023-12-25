@@ -20,12 +20,13 @@ class Mesh {
         return end($this->performance)["timed"];
     }
 
-    // TODO: add __before__[function_name] hooks
     public function __call($name, $args) {
 
         if ($_ENV["config"]["debug"]) $outer_start = microtime(true);
 
         if (property_exists($this->class, "__before__call")) $this->class->__before__call();
+        $before_name = "__before__$name";
+        if (property_exists($this->class, $before_name)) $this->class->$before_name();
 
         if ($_ENV["config"]["debug"]) $start = microtime(true);
 
@@ -33,6 +34,8 @@ class Mesh {
 
         if ($_ENV["config"]["debug"]) $end = microtime(true);
 
+        $after_name = "__after__$name";
+        if (property_exists($this->class, $after_name)) $this->class->$after_name();
         if (property_exists($this->class, "__after__call")) $this->class->__after__call();
 
         if ($_ENV["config"]["debug"]) $outer_end = microtime(true);
@@ -43,11 +46,20 @@ class Mesh {
     }
 
     public function __get($name) {
-        return $this->class->$name;
+        $before_name = "__before__$name";
+        if (property_exists($this->class, $before_name)) $this->class->$before_name();
+        $ret = $this->class->$name;
+        $after_name = "__after__$name";
+        if (property_exists($this->class, $after_name)) $this->class->$after_name();
+        return $ret;
     }
 
-    public function __set($name, $value) {
+    public function __set($name, $value) : void {
+        $before_name = "__before__$name";
+        if (property_exists($this->class, $before_name)) $this->class->$before_name();
         $this->class->$name = $value;
+        $after_name = "__after__$name";
+        if (property_exists($this->class, $after_name)) $this->class->$after_name();
     }
 
 }

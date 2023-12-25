@@ -9,7 +9,7 @@ use \MeshMVC\StorageTypes;
 	    public static $currentController = null;
 	    public static $currentView = null;
         public static $models = null;
-
+        public static $loggers = [];
         public static $storage = [];
 
         // TODO: automate these values
@@ -31,14 +31,29 @@ use \MeshMVC\StorageTypes;
             "zip" => StorageTypes\Zip::class,
         ];
 
+        public static $loggerTypes = [
+            "logger" => \MeshMVC\Loggers\Logger::class,
+        ];
+
         public function __construct() {
             self::$models = new \MeshMVC\Models();
         }
 
         public static function storage($alias, $instance = null) {
-            if ($alias === "all") return self::$storage;
             if (empty($instance)) return self::$storage[$alias];
-            self::$storage[$alias] = $instance;
-            return $instance;
+            self::$storage[$alias] = new \MeshMVC\Mesh($instance);
+            return self::$storage[$alias];
+        }
+        public static function storages() : array {
+            return self::$storage;
+        }
+
+        public static function logger($alias, $instance = null) {
+            if (empty($instance)) return self::$loggers[$alias];
+            self::$loggers[$alias] = new \MeshMVC\Mesh($instance);
+            return self::$loggers[$alias];
+        }
+        public static function loggers() : array {
+            return self::$loggers;
         }
     }

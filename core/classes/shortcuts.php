@@ -1,12 +1,41 @@
 <?php
 	/* This file contains shortcuts to functions and classes within namespaces */
 
-    function debug($obj) {
+    /**
+     * @throws Exception
+     */
+    function loggers($message, $throw=false, $level=0) : bool {
+        foreach (@\MeshMVC\Cross::loggers() as $logger) {
+            $logger->log($message, $throw=false, $level);
+        }
+        if ($throw) {
+            throw new \Exception($message);
+        }
+        return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    function l($message, $throw=false, $level=0) : bool {
+        return loggers($message, $throw, $level);
+    }
+
+    function debug($obj) : bool {
         if ($_ENV["config"]["debug"]) {
-            echo "<pre style='color: #333; font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; font-size:14px;'>";
+            echo "<pre style=\"color: #333; font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; font-size:14px;\">";
             var_dump($obj);
             echo "</pre>";
+            ob_start();
+            var_dump($obj);
+            $result = ob_get_clean();
+            loggers($result, false, 0);
         }
+        return true;
+    }
+
+    function e($o) : bool {
+        return debug($o);
     }
 
     $default_storage = $_ENV["config"]["default_storage"];
@@ -26,7 +55,7 @@
             }
         }
 
-        $storage = \MeshMVC\Cross::storage($alias, new \MeshMVC\Mesh(new \MeshMVC\Cross::$storageTypes[$id]));
+        $storage = \MeshMVC\Cross::storage($alias, new \MeshMVC\Cross::$storageTypes[$id]);
         $storage->connect(...$props);
         return $storage;
     }

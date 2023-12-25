@@ -118,16 +118,6 @@ class Tools
             return isset($_POST[$var]);
         }
 
-        // write to logs
-        public static function log($data)
-        {
-            $log_file = $_ENV["PATH"].$_ENV["config"]["logger"];
-            if ($fh = fopen($log_file, 'a')) {
-                fwrite($fh, $data . PHP_EOL);
-                fclose($fh);
-            }
-        }
-
         // validate email
         public static function validate_email($email)
         {

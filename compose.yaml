@@ -5,6 +5,7 @@ x-meshmvc:
   #output errors and prevent redirecting and displaying an error page
   debug: true
 
+  default_logger: logger
   logs:
     access_logs: "logs/access.log"
     error_logs: "logs/errors.log"
@@ -25,6 +26,7 @@ x-meshmvc:
     - js:*.js
     #media files search pattern
     - media:*.*
+    -
 
   default_storage: fs
   storage:

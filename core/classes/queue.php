@@ -186,7 +186,7 @@
             echo self::output();
 
             // disconnect all storages
-            foreach (\MeshMVC\Cross::storage("all") as $id => $storage) {
+            foreach (\MeshMVC\Cross::storages() as $id => $storage) {
                 try {
                     $storage->disconnect();
                 } catch(\Exception $e) {

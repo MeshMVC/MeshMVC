@@ -3,7 +3,7 @@
 set -e
 
 function usage {
-    echo "./mmvc.sh [OPTIONS]...
+    echo "./mmvc [OPTIONS]...
   -h  this help message
   -u  alias of 'docker compose up -d'
   -d  alias of 'docker compose down'
