@@ -4,10 +4,6 @@ namespace MeshMVC;
 
 abstract class Translation {
 
-    public function storage($string) {
-
-    }
-
     public function import($id) {
 
     }
