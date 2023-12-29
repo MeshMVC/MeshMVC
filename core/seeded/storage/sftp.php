@@ -63,23 +63,14 @@ class SFTP extends \MeshMVC\Storage {
         return $this;
     }
     public function download($location) : mixed {
-
-        $output = null;
-
-        try {
-            $sftp = ssh2_sftp($this->link());
-            $sftpStream = @fopen('ssh2.sftp://' . $sftp . $location, 'r');
-            if (!$sftpStream) {
-                throw new Exception("Could not open remote file: $location");
-            }
-            $output = stream_get_contents($sftpStream);
-        } catch (\Exception $e) {
-
-        } finally {
-            fclose($sftpStream);
+        $sftp = ssh2_sftp($this->link());
+        $sftpStream = fopen("ssh2.sftp://$sftp/$location", 'r');
+        if ($sftpStream === false) {
+            throw new \Exception("Could not open remote file: $location");
         }
-
-        return $output;
+        $contents = stream_get_contents($sftpStream);
+        fclose($sftpStream);
+        return $contents;
     }
 
     public function query($query) : self {

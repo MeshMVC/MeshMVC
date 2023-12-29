@@ -47,20 +47,20 @@ DirectoryIndex index.php
   RewriteEngine on
   RewriteBase /
 
+  # Rewrite /files to public files
+  # Block any paths that contain /../ or ../ (directory traversal attempts)
+  RewriteCond %{REQUEST_URI} \.\./ [OR]
+  RewriteCond %{REQUEST_URI} /..$
+  RewriteRule ^ - [F,L]
+
+  # Block private directory file access
+  RewriteCond %{THE_REQUEST} \s/.*private [NC]
+  RewriteRule ^ - [F,L]
+
   # Rewrite /find to package search
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^find/(.*)$ /index.php?f=$1 [L,QSA]  
-
-  # Rewrite /files to public files
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^files/(.*)$ /webapp/files/public/$1 [L,QSA]
-
-  # Rewrite private /files to public files
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^webapp/files/private/(.*)$ /webapp/files/public/$1 [L,QSA]
   
   # Rewrite current-style URLs of the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
