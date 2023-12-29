@@ -4,8 +4,6 @@ namespace MeshMVC\Views;
 use GraphQL\GraphQL;
 use GraphQL\Utils\BuildSchema;
 use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Executor\ExecutionResult;
-use MeshMVC\Mesh;
 use MeshMVC\View;
 
 class Gql extends View {
@@ -21,7 +19,6 @@ class Gql extends View {
         try {
             $from = $this->from; // GQL model
             $filter = $this->filter;
-            $display_mode = $this->display_mode; // resolvers
 
             // no view model specified
             if ($from == "") throw new \Exception("No model specified!");

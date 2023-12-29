@@ -9,6 +9,10 @@ class modelForGQL extends \MeshMVC\Models\GQL {
         return $this->prefix.$message;
     }
 
+    public function echo2($message) {
+        return $this->prefix.$message;
+    }
+
     public function sub($x, $y) {
         return $x - $y;
     }
@@ -18,7 +22,7 @@ class modelForGQL extends \MeshMVC\Models\GQL {
 class _GQL extends \MeshMVC\Controller {
 
     // test with POST body: {"query": "query { echo(message: \"Hello World\") }" }
-    // or: {"query": "mutation { sum(x: 2, y: 3) }" }
+    // or: {"query": "mutation { sub(x: 2, y: 3) }" }
     function sign() {
         return method("post") && route("/gql");
     }
@@ -30,6 +34,7 @@ class _GQL extends \MeshMVC\Controller {
             ->schema('
                 type Query {
                   echo(message: String!): String!
+                  echo2(message: String!): String!
                 }
                 
                 type Mutation {
