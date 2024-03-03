@@ -24,7 +24,7 @@ abstract class Controller {
     public function __destruct() {
     }
 
-
+    abstract public function scope();
     /**
      * Controller signature: Determines if current controller should run
      * @link https://meshmvc.com/????

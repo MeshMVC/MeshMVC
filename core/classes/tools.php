@@ -3,11 +3,17 @@
 namespace MeshMVC;
 use JmesPath\Env as JmesPath;
 
-class Tools
-    {
+class Tools {
 
         private static $rawInput = null;
 
+        /**
+         * This method is used to create a storage instance based on the alias provided.
+         *
+         * @param string $alias The alias of the storage configuration to use.
+         *
+         * @return \MeshMVC\Storage The created storage instance.
+         */
         public static function create_storage($alias) : \MeshMVC\Storage {
             $props = $_ENV["config"]["storage"][$alias];
             foreach ($props as $prop) {
@@ -17,11 +23,23 @@ class Tools
 
         }
 
+        /**
+         * Checks if a given string is a valid URL.
+         *
+         * @param string $url The URL to validate.
+         * @return bool Returns true if the URL is valid, false otherwise.
+         */
         public static function is_url($url) {
             return filter_var($url, FILTER_VALIDATE_URL);
         }
 
-        public static function input($var=null) {
+    /**
+     * Retrieves the input data.
+     *
+     * @param string|null $var The name of the input variable to retrieve. Defaults to null.
+     * @return mixed|null The value of the input variable specified by $var if it exists, null otherwise.
+     */
+    public static function input($var=null) {
             if (self::$rawInput == null) {
                 self::$rawInput = file_get_contents('php://input');
             }

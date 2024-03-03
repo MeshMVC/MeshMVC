@@ -21,7 +21,14 @@
         return loggers($message, $throw, $level);
     }
 
-    function debug($obj) : bool {
+/**
+ * Outputs the debugging information of the given object.
+ *
+ * @param mixed $obj The object to be debugged.
+ *
+ * @return bool Returns true if the debugging information is outputted, otherwise returns false.
+ */
+function debug($obj) : bool {
         if ($_ENV["config"]["debug"]) {
             echo "<pre style=\"color: #333; font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; font-size:14px;\">";
             var_dump($obj);
@@ -39,7 +46,15 @@
     }
 
     $default_storage = $_ENV["config"]["default_storage"];
-    function storage($alias = null) : mixed {
+/**
+ * Returns an instance of the storage object based on the given alias.
+ * If no alias is provided, the default storage alias will be used.
+ *
+ * @param string|null $alias The alias of the storage
+ * @return mixed Returns an instance of the storage object
+ * @throws Exception If the storage configuration is not defined for the given alias
+ */
+function storage($alias = null) : mixed {
         global $default_storage;
         if (empty($alias)) $alias = $default_storage;
         if ($alias === "all") return \MeshMVC\Cross::$storage;

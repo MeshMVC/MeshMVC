@@ -1,11 +1,32 @@
 <?php
 
+/**
+ * Class Cross
+ *
+ * The Cross class is used for global shortcuts to access current controllers, views, models, loggers, and storage types.
+ */
+
 namespace MeshMVC;
-use \MeshMVC\Views;
-use \MeshMVC\StorageTypes;
+use /**
+ * The Views namespace is responsible for handling the presentation layer of the application.
+ * It provides classes for rendering and displaying views or templates to the user.
+ *
+ * @package MeshMVC\Views
+ */
+    \MeshMVC\Views;
+use /**
+ * This class represents the available storage types in MeshMVC framework.
+ */
+    \MeshMVC\StorageTypes;
 
     // used for global shortcuts to access current controllers and views
-	class Cross {
+
+/**
+ * Class Cross
+ *
+ * The Cross class is responsible for managing the current controller, current view, models, loggers and storage instances.
+ */
+class Cross {
 	    public static $currentController = null;
 	    public static $currentView = null;
         public static $models = null;

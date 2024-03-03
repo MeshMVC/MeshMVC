@@ -66,22 +66,33 @@ x-defaults:
     networks:
       - net
 services:
-  meshmvc:
-    build: ./docker
+  meshmvc-api:
+    build: ./docker/api
     ports:
-      - 80:80
+      - 6666:6666
     volumes:
       - ./www/:/var/www/html
       - ./:/var/www/
-      - ./mysqldata:/var/lib/mysql
     extra_hosts:
       - host.docker.internal:host-gateway
+    <<: *network
+  meshmvc-frontend:
+    build: ./docker/frontend
+    ports:
+      - 5555:5555
+    volumes:
+      - ./www/packages/app/frontend/private:/usr/src/app
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    command: sh -c "npm install && npm start"
     <<: *network
 
   db:
     image: mysql:latest
     ports:
       - 3306:3306
+    volumes:
+      - ./mysqldata:/var/lib/mysql
     environment:
       <<: *mysql
     <<: *network
@@ -94,7 +105,7 @@ services:
     environment:
       - PMA_ARBITRARY=1
     ports:
-      - "8888:80"
+      - "8888:81"
     <<: *network
 
 networks:

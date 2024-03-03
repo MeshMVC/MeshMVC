@@ -1,11 +1,45 @@
 <?php
 
-namespace MeshMVC\Views;
-use GraphQL\GraphQL;
-use GraphQL\Utils\BuildSchema;
-use GraphQL\Type\Definition\ResolveInfo;
-use MeshMVC\View;
+/**
+ * Class Gql
+ *
+ * This class represents a GraphQL view in the MeshMVC framework.
+ */
 
+namespace MeshMVC\Views;
+use /**
+ * Class GraphQL
+ *
+ * A utility class for working with GraphQL queries and mutations.
+ */
+    GraphQL\GraphQL;
+use /**
+ * Class BuildSchema
+ *
+ * This class provides utility methods to build a GraphQL schema from a schema language definition string.
+ */
+    GraphQL\Utils\BuildSchema;
+use /**
+ * The ResolveInfo class provides information about the current GraphQL query resolution.
+ *
+ * @package GraphQL\Type\Definition
+ */
+    GraphQL\Type\Definition\ResolveInfo;
+use /**
+ * Class View
+ *
+ * The View class is responsible for rendering HTML templates and generating output for the user interface.
+ *
+ * @package MeshMVC
+ */
+    MeshMVC\View;
+
+/**
+ * Class Gql
+ *
+ * This class represents a GraphQL view in the MeshMVC framework.
+ * It extends the View class and provides methods to handle GraphQL queries.
+ */
 class Gql extends View {
 
     public string $schema = "";
@@ -15,6 +49,13 @@ class Gql extends View {
         return $this;
     }
 
+    /**
+     * Parses the GQL model and executes a GraphQL query.
+     *
+     * @param string $previousOutput Optional. The previous output to be appended to the result JSON. Default is an empty string.
+     * @return string The result JSON encoded as a string.
+     * @throws \Exception When no model is specified.
+     */
     public function parse($previousOutput = "") : string {
         try {
             $from = $this->from; // GQL model
