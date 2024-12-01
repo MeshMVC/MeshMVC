@@ -5,10 +5,10 @@ TODO:
 Views:
 - view() = Last View
 - view()->type (returns "html" for example.)
-- add cache function view->from("template")->cache(key, storage)
+- add cache function view->from("template", cache_key, cache_timeout, cache_storage)
 - add view("html")->filter("allowed-tags and attributes")
 - add doc manipulation, i.e. view("html")->doc(".selector")->parent()->attribute;
-
+- add mustache templating
 JS:
 - Create mmvc object,
 - add mmvc.controller = []
