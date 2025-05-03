@@ -16,3 +16,10 @@ JS:
 - add mmvc.controller[x].run()
 - add mmvc.preload(&var, URL)
 - add mmvc.view(url, data) / implement knockoutjs for data change listeners.
+
+caching:
+
+if ( cache_start($string, $storage, $timeout) )
+
+}
+cache_end();
