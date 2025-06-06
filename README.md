@@ -19,7 +19,7 @@ JS:
 
 caching:
 
-if ( cache_start($string, $storage, $timeout) )
+if ( cache_start($storage, $key, $timeout) )
 
 }
 cache_end();
